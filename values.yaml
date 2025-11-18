@@ -1,0 +1,13 @@
+config:
+  existingSecret: oidc-config
+  configFile: |-
+    provider = "oidc"
+    provider_display_name = "Login with CILogon"
+    skip_provider_button = true
+    oidc_issuer_url = "https://cilogon.org"
+    upstreams = ["http://nginx-service.default.svc.cluster.local:80"]
+    reverse_proxy = true
+    scope = "openid email org.cilogon.userinfo"
+    email_domains = ["wisc.edu"]
+
+    redirect_url = "http://localhost:5000/oauth2/callback"

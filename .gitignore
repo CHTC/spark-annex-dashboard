@@ -1,0 +1,3 @@
+secrets/
+kustomization/secrets
+.env
