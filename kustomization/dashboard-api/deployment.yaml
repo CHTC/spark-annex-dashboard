@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: dashboard-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dashboard-api
+    spec:
+      containers:
+      - name: dashboard-api
+        image: hub.opensciencegrid.org/mwestphall/personal-ap-dashboard-api:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

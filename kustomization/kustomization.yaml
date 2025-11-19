@@ -2,3 +2,4 @@ resources:
 - secrets/oidc-config.yaml
 - nginx
 - dashboard-ui
+- dashboard-api

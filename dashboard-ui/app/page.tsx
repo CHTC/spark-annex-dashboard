@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { headers } from "next/headers";
+import SparkAccount from "./spark-account";
 
 export default async function Home() {
   const headersList = await headers();
@@ -19,6 +20,9 @@ export default async function Home() {
           <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black">
             To get started, edit the page.tsx file.
           </h1>
+
+          <SparkAccount />
+
           {headersList.entries().map(([key, value]) => (
             <p key={key} className="text-sm text-zinc-500">
               {key}: {value}

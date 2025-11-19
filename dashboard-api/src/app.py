@@ -7,4 +7,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root(request: Request) -> dict[str, str]:
-    return request.headers
+    return {
+        "message": "Hello, world!",
+        "headers": request.headers.items()
+    }
