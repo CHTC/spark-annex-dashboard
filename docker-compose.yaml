@@ -3,9 +3,7 @@ services:
     image: hub.opensciencegrid.org/mwestphall/personal-ap-dashboard-api:latest
     build:
       context: dashboard-api
-      dockerfile: ./Dockerfile
   dashboard-ui:
     image: hub.opensciencegrid.org/mwestphall/personal-ap-dashboard-ui:latest
     build:
       context: dashboard-ui
-      dockerfile: dashboard-ui/Dockerfile
