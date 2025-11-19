@@ -1,9 +1,4 @@
 resources:
-- deployment.yaml
-- service.yaml
 - secrets/oidc-config.yaml
-
-configMapGenerator:
-- name: nginx-webserver-config
-  files:
-  - default.conf
+- nginx
+- dashboard-ui

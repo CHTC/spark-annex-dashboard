@@ -19,6 +19,11 @@ export default async function Home() {
           <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black">
             To get started, edit the page.tsx file.
           </h1>
+          {headersList.entries().map(([key, value]) => (
+            <p key={key} className="text-sm text-zinc-500">
+              {key}: {value}
+            </p>
+          ))}
           <p className="max-w-md text-lg leading-8 text-zinc-600">
             Looking for a starting point or more instructions? Head over to{" "}
             <a

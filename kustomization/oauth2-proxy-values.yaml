@@ -10,4 +10,5 @@ config:
     scope = "openid email org.cilogon.userinfo"
     email_domains = ["wisc.edu"]
     pass_user_headers = true
+    pass_authorization_header = true
     redirect_url = "http://localhost:5000/oauth2/callback"
