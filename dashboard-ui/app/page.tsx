@@ -21,7 +21,7 @@ export default async function Home() {
             To get started, edit the page.tsx file.
           </h1>
 
-          <SparkAccount />
+          <SparkAccount authToken={headersList.get("authorization")} />
 
           {headersList.entries().map(([key, value]) => (
             <p key={key} className="text-sm text-zinc-500">

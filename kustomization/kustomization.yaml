@@ -3,3 +3,10 @@ resources:
 - nginx
 - dashboard-ui
 - dashboard-api
+
+configMapGenerator:
+
+secretGenerator:
+- name: tiger-dev-ca-cert
+  files:
+  - secrets/tiger_dev_ca.crt
