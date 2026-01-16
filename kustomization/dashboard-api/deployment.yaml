@@ -18,3 +18,14 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 80
+        env:
+        - name: LDAP_SERVER
+          value: "ldap://ldap-service.default.svc.cluster.local:1389"
+        - name: LDAP_USER
+          value: "cn=admin,dc=chtc,dc=wisc,dc=edu"
+        - name: LDAP_AUTHTOK
+          value: "admin"
+        - name: LDAP_CERT
+          value: ""
+        - name: LDAP_GROUP
+          value: "foo"
