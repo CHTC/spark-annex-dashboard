@@ -17,4 +17,4 @@ spec:
         image: hub.opensciencegrid.org/mwestphall/personal-ap-dashboard-ui:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 3000
+        - containerPort: 80

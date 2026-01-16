@@ -3,9 +3,6 @@ import { headers } from "next/headers";
 import SparkAccount from "./spark-account";
 
 export default async function Home() {
-  const headersList = await headers();
-  console.log(headersList.entries());
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans ">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white sm:items-start">
@@ -21,13 +18,8 @@ export default async function Home() {
             To get started, edit the page.tsx file.
           </h1>
 
-          <SparkAccount authToken={headersList.get("authorization")} />
+          <SparkAccount/>
 
-          {headersList.entries().map(([key, value]) => (
-            <p key={key} className="text-sm text-zinc-500">
-              {key}: {value}
-            </p>
-          ))}
           <p className="max-w-md text-lg leading-8 text-zinc-600">
             Looking for a starting point or more instructions? Head over to{" "}
             <a
