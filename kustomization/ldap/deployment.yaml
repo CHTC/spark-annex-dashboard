@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldap-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap
+  template:
+    metadata:
+      labels:
+        app: ldap
+    spec:
+      containers:
+      - name: ldap
+        image: bitnamilegacy/openldap:latest
+        ports:
+        - containerPort: 1389
+        env:
+        - name: LDAP_ADMIN_USERNAME
+          value: admin
+        - name: LDAP_ADMIN_PASSWORD
+          value: admin
+        - name: LDAP_CONFIG_ADMIN_ENABLED
+          value: "yes"
+        - name: LDAP_CONFIG_ADMIN_USERNAME
+          value: config-admin
+        - name: LDAP_CONFIG_ADMIN_PASSWORD
+          value: admin
+        - name: LDAP_ROOT
+          value: dc=chtc,dc=wisc,dc=edu
+        - name: LDAP_ADMIN_DN
+          value: cn=admin,dc=chtc,dc=wisc,dc=edu
+      - name: init-ldap
+        image: bitnamilegacy/openldap:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          sleep 10
+
+          # Create custom attributes
+          cat << EOF > /tmp/bootstrap.ldif
+          dn: cn=eduMember,cn=schema,cn=config
+          cn: eduMember
+          olcAttributeTypes: {0}( 1.3.6.1.4.1.5923.1.5.1.1 NAME 'isMemberOf' DESC '' EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+          olcAttributeTypes: {1}( 1.3.6.1.4.1.5923.1.5.1.2 NAME 'hasMember' DESC '' EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+          olcObjectClasses: {0}( 1.3.6.1.4.1.5923.1.5.2 NAME 'eduMember' AUXILIARY MAY ( isMemberOf $ hasMember ) )
+          objectClass: olcSchemaConfig
+          EOF
+          
+          cat /tmp/bootstrap.ldif
+          ldapadd -x -D "cn=config-admin,cn=config" -w admin -H ldap://localhost:1389 -f /tmp/bootstrap.ldif || true
+
+          cat << EOF > /tmp/ous.ldif
+          dn: ou=people,dc=chtc,dc=wisc,dc=edu
+          ou: people
+          objectClass: organizationalUnit
+
+          dn: ou=groups,dc=chtc,dc=wisc,dc=edu
+          ou: groups
+          objectClass: organizationalUnit
+
+          dn: ou=user_tags,dc=chtc,dc=wisc,dc=edu
+          ou: user_tags
+          objectClass: organizationalUnit
+
+          dn: ou=system,dc=chtc,dc=wisc,dc=edu
+          ou: system
+          objectClass: organizationalUnit
+          EOF
+
+          # Add OUs
+          cat /tmp/ous.ldif
+          ldapadd -x -D "cn=admin,dc=chtc,dc=wisc,dc=edu" -w admin -H ldap://localhost:1389 -f /tmp/ous.ldif || true
+
+          # Add a dummy person for testing
+          cat << EOF > /tmp/person.ldif
+          dn: uid=westphall,ou=people,dc=chtc,dc=wisc,dc=edu
+          objectClass: top
+          objectClass: posixAccount
+          objectClass: shadowAccount
+          objectClass: inetOrgPerson
+          objectClass: eduMember
+          cn: westphall
+          sn: westphall
+          uid: westphall
+          uidNumber: 16859
+          gidNumber: 100
+          homeDirectory: /home/westphall
+          loginShell: /bin/bash
+          isMemberOf: foo
+          EOF
+          
+          cat /tmp/person.ldif
+          ldapadd -x -D "cn=admin,dc=chtc,dc=wisc,dc=edu" -w admin -H ldap://localhost:1389 -f /tmp/person.ldif || true
+
+          sleep infinity
