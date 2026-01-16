@@ -8,7 +8,7 @@ config:
     upstreams = ["http://nginx-service.default.svc.cluster.local:80"]
     reverse_proxy = true
     scope = "openid email org.cilogon.userinfo"
-    cookie_refresh = "2m0s"
+    cookie_refresh = "10m0s"
     email_domains = ["wisc.edu"]
     pass_user_headers = true
     pass_access_token = true

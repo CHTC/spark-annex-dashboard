@@ -29,3 +29,5 @@ spec:
           value: ""
         - name: LDAP_GROUP
           value: "foo"
+        - name: DASHBOARD_DB_PATH
+          value: "sqlite:////tmp/dashboard.db"
