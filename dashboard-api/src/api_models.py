@@ -1,12 +1,6 @@
 from pydantic import BaseModel
 from db_models import DashboardRequestStatus
 
-class UserInfo(BaseModel):
-    user_id: str
-    ldap_authorized: bool
-    dashboard_status: DashboardRequestStatus
-
-
 class DashboardRequestInfo(BaseModel):
     job_input_size: int
     job_output_size: int
@@ -14,3 +8,10 @@ class DashboardRequestInfo(BaseModel):
     concurrent_jobs: int
     dagman: bool
     local_universe: bool
+
+class UserInfo(BaseModel):
+    user_id: str
+    ldap_authorized: bool
+    dashboard_status: DashboardRequestStatus
+    dashboard_info: DashboardRequestInfo | None = None
+

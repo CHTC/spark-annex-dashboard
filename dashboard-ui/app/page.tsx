@@ -1,66 +1,56 @@
-import Image from "next/image";
-import { headers } from "next/headers";
-import SparkAccount from "./spark-account";
+'use client'
 
-export default async function Home() {
+import Image from "next/image";
+import SparkAccount from "./spark-account";
+import APForm from "./apForm";
+
+import { DashboardRequestStatus, UserInfo } from "@/types/types"
+import useSWR from "swr"
+import APNotice from "./apNotice";
+
+const fetcher = (input: string) => fetch(input).then((res) => res.json() as Promise<UserInfo>)
+
+export default function Home() {
+  const { data, error, isLoading } = useSWR('http://localhost:5000/api/', fetcher)
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans ">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white sm:items-start">
-        <Image
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black">
-            To get started, edit the page.tsx file.
-          </h1>
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold leading-10 tracking-tight text-black">
+              Personal Access Point - Getting Started
+            </h1>
+            <p className="text-md text-gray-600">
+              {data && data.dashboard_status === DashboardRequestStatus.COMPLETE ?
+                "" :
+                <span>
+                  Before running your first HTCondor job on a Personal AP, you must
+                  create an account on CHTC's Slurm cluster and let us know about 
+                  the resource requirements for your AP.
+                </span>  
+              }
+            </p>
+          </div>
+          <div className="max-w-2xl mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              Spark Cluster Access
+            </h2>
+            <SparkAccount data={data} error={error} isLoading={isLoading}/>
+          </div>
+          <div className="max-w-2xl mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              Personal AP Configuration
+            </h2>
+            <APNotice data={data} isLoading={isLoading}/>
 
-          <SparkAccount/>
+            {data && data.ldap_authorized && data.dashboard_status !== DashboardRequestStatus.COMPLETE &&
+              <APForm data={data}/>
+            }
 
-          <p className="max-w-md text-lg leading-8 text-zinc-600">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {data && data.dashboard_status === DashboardRequestStatus.COMPLETE &&
+              <p>TODO: Live Dashboard</p>
+            }
+          </div>
         </div>
       </main>
     </div>
