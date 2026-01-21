@@ -30,16 +30,16 @@ export default function APNotice({data, isLoading}: APNoticeProps) {
   } else if (data && data.dashboard_status === DashboardRequestStatus.REQUEST_RECEIVED) {
     return (
       <p className="text-md text-gray-600 mb-8">
-        We have received your request for a Personal AP with the below parameters. 
-        The CHTC infrastructure services team is reviewing your request and 
+        We have received your request for a Personal AP with the following parameters. 
+        The CHTC Infrastructure Services team is reviewing your request and 
         will contact you if we need any additional information.
       </p>
     )
   } else if (data && data.dashboard_status === DashboardRequestStatus.IN_PROGRESS) {
     return (
       <p className="text-md text-gray-600 mb-8">
-        Your request for a Personal AP with the below paramters has been approved. 
-        We are in the process of provisioning your AP.
+        Your request for a Personal AP with the following parameters has been approved. 
+        The CHTC Infrastructure Services team is in the process of provisioning your AP.
       </p>
     )
   } else {

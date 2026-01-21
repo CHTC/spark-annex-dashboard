@@ -32,9 +32,8 @@ export default function SparkAccount({data, error, isLoading}: SparkAccountProps
 
         return (
           <span>
-            Spark access is active for user {data.user_id}.
+            Spark access is configured for user {data.user_id}.
           </span>)
-
       })()}
     </p>
   )

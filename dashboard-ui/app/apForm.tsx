@@ -1,16 +1,32 @@
 'use client';
 
 import { DashboardRequest, DashboardRequestStatus, UserInfo } from '@/types/types';
+import { ArrowPathIcon } from '@heroicons/react/24/solid';
+import { error } from 'console';
 import { useEffect, useState } from 'react';
 
 interface APFormProps {
   data: UserInfo;
+  onSubmit: (formData: DashboardRequest) => void;
 }
 
-const textInputClass = "w-full px-4 py-2 border border-gray-300 rounded-md disabled:bg-gray-100"
+const textInputClass = "w-full px-4 py-2 border border-gray-300 rounded-md disabled:bg-gray-100 disabled:text-gray-500"
 const checkboxClass = "w-5 h-5 text-blue-600 rounded border-gray-300 cursor-pointer disabled:cursor-default"
 
-export default function APForm({data}: APFormProps) {
+
+const submitAPRequest = async (formData: DashboardRequest) => {
+  var response = await fetch('http://localhost:5000/api/ap', {
+    method: 'POST',
+    body: JSON.stringify(formData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  return response;
+}
+
+
+export default function APForm({data, onSubmit}: APFormProps) {
   const [formData, setFormData] = useState<DashboardRequest>({
     job_input_size: 1,
     job_output_size: 1,
@@ -18,6 +34,11 @@ export default function APForm({data}: APFormProps) {
     concurrent_jobs: 10000,
     dagman: false,
     local_universe: false,
+  });
+
+  const [sendingForm, setSendingForm] = useState({
+    sending: false,
+    error: "",
   });
 
   useEffect(() => {
@@ -45,10 +66,18 @@ export default function APForm({data}: APFormProps) {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    // Add your submit logic here
+
+    setSendingForm({sending: true, error: ""});
+    var response = await submitAPRequest(formData);
+    if (!response.ok) {
+      setSendingForm({sending: false, error: `Error submitting form: ${response.statusText}`});
+    } else {
+      setSendingForm({sending: false, error: ""});
+      onSubmit(formData);
+    }
   };
 
   const disabled = data.dashboard_status !== DashboardRequestStatus.NOT_REQUESTED;
@@ -162,9 +191,10 @@ export default function APForm({data}: APFormProps) {
       </div>
 
       {/* Submit Button */}
-      {!disabled &&
+      {!disabled && !sendingForm.sending && 
         <div className="flex justify-between">
           <button
+            type="button"
             className="px-0 py-2 bg-none text-blue-600 font-medium rounded-md hover:text-blue-700 cursor-pointer"
           >
             Request Defaults
@@ -175,6 +205,26 @@ export default function APForm({data}: APFormProps) {
             className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 cursor-pointer"
           >
             Submit
+          </button>
+        </div>
+      }
+      {sendingForm.sending && 
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="px-6 py-2 bg-none text-blue-600 rounded-md"
+          >
+            <ArrowPathIcon className='size-6 animate-spin'/>
+          </button>
+        </div>
+      }
+      {disabled &&
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="px-6 py-2 bg-none text-red-600 font-medium rounded-md hover:text-red-700 cursor-pointer"
+          >
+            Cancel Request
           </button>
         </div>
       }

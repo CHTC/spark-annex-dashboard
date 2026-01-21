@@ -4,29 +4,38 @@ import Image from "next/image";
 import SparkAccount from "./spark-account";
 import APForm from "./apForm";
 
-import { DashboardRequestStatus, UserInfo } from "@/types/types"
+import { DashboardRequest, DashboardRequestStatus, UserInfo } from "@/types/types"
 import useSWR from "swr"
 import APNotice from "./apNotice";
+import { useEffect, useState } from "react";
 
-const fetcher = (input: string) => fetch(input).then((res) => res.json() as Promise<UserInfo>)
+const fetcher = (input: string) => fetch(input).then((res) => res.json())
 
 export default function Home() {
-  const { data, error, isLoading } = useSWR('http://localhost:5000/api/', fetcher)
+  const { data, error, isLoading } = useSWR<UserInfo>('http://localhost:5000/api/', fetcher)
+
+  const [currentData, setCurrentData] = useState<UserInfo | undefined>(undefined);
+  useEffect(() => {
+    if (data) {
+      setCurrentData(data);
+    }
+  }, [data]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans ">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white sm:items-start">
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold leading-10 tracking-tight text-black">
+            <h1 className="text-2xl font-semibold leading-10 tracking-tight text-black mb-2">
               Personal Access Point - Getting Started
             </h1>
             <p className="text-md text-gray-600">
-              {data && data.dashboard_status === DashboardRequestStatus.COMPLETE ?
+              {currentData && currentData.dashboard_status === DashboardRequestStatus.COMPLETE ?
                 "" :
                 <span>
                   Before running your first HTCondor job on a Personal AP, you must
                   create an account on CHTC's Slurm cluster and let us know about 
-                  the resource requirements for your AP.
+                  your project's resource requirements.
                 </span>  
               }
             </p>
@@ -35,19 +44,23 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-gray-900 mb-2">
               Spark Cluster Access
             </h2>
-            <SparkAccount data={data} error={error} isLoading={isLoading}/>
+            <SparkAccount data={currentData} error={error} isLoading={isLoading}/>
           </div>
           <div className="max-w-2xl mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">
               Personal AP Configuration
             </h2>
-            <APNotice data={data} isLoading={isLoading}/>
+            <APNotice data={currentData} isLoading={isLoading}/>
 
-            {data && data.ldap_authorized && data.dashboard_status !== DashboardRequestStatus.COMPLETE &&
-              <APForm data={data}/>
+            {currentData && currentData.ldap_authorized && currentData.dashboard_status !== DashboardRequestStatus.COMPLETE &&
+              <APForm data={currentData} onSubmit={(newData)=>setCurrentData({
+                ...currentData,
+                dashboard_status: DashboardRequestStatus.REQUEST_RECEIVED,
+                dashboard_info: newData,
+              })}/>
             }
 
-            {data && data.dashboard_status === DashboardRequestStatus.COMPLETE &&
+            {currentData && currentData.dashboard_status === DashboardRequestStatus.COMPLETE &&
               <p>TODO: Live Dashboard</p>
             }
           </div>
