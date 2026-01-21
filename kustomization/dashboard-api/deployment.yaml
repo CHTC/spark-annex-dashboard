@@ -19,6 +19,7 @@ spec:
         ports:
         - containerPort: 80
         env:
+        # LDAP configuration
         - name: LDAP_SERVER
           value: "ldap://ldap-service.default.svc.cluster.local:1389"
         - name: LDAP_USER
@@ -29,5 +30,15 @@ spec:
           value: ""
         - name: LDAP_GROUP
           value: "foo"
+
+        # Local DB configuration
         - name: DASHBOARD_DB_PATH
           value: "sqlite:////tmp/dashboard.db"
+
+        # Email configuration
+        - name: FROM_ADDRESS
+          value: chtc-infrastructure@g-groups.wisc.edu
+        - name: TO_ADDRESS
+          value: westphall@wisc.edu
+        - name: SMTP_HOST
+          value: smtp.wiscmail.wisc.edu 
