@@ -28,7 +28,7 @@ def register_user_if_not_exists(netid: str):
             session.add(user)
             session.commit()
 
-def get_dashboard_status_for_netid(netid: str) -> DashboardRequestStatus:
+def get_dashboard_status_for_netid(netid: str) -> tuple[DashboardRequestStatus, DashboardRequestInfo | None]:
     """ Given a user ID, return the status of that user's dashboard request."""
     with DbSession() as session:
         user = session.scalar(select(UserModel).where(UserModel.netid == netid))
@@ -37,9 +37,9 @@ def get_dashboard_status_for_netid(netid: str) -> DashboardRequestStatus:
             .where(UserDashboardRequestsModel.request_status != DashboardRequestStatus.DELETED)
         )
         if not active_request:
-            return DashboardRequestStatus.NOT_REQUESTED
+            return DashboardRequestStatus.NOT_REQUESTED, None
 
-        return active_request.request_status
+        return active_request.request_status, DashboardRequestInfo.from_db_model(active_request)
 
 
 
