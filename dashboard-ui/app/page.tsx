@@ -8,6 +8,7 @@ import { DashboardRequest, DashboardRequestStatus, UserInfo } from "@/types/type
 import useSWR from "swr"
 import APNotice from "./apNotice";
 import { useEffect, useState } from "react";
+import Header from "./header";
 
 const fetcher = (input: string) => fetch(input).then((res) => res.json())
 
@@ -22,8 +23,9 @@ export default function Home() {
   }, [data]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans ">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white sm:items-start">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-zinc-50 font-sans ">
+      <Header />
+      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-16 px-16 mb-4 bg-white sm:items-start rounded-md">
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <div className="mb-8">
             <h1 className="text-2xl font-semibold leading-10 tracking-tight text-black mb-2">
@@ -33,9 +35,9 @@ export default function Home() {
               {currentData && currentData.dashboard_status === DashboardRequestStatus.COMPLETE ?
                 "" :
                 <span>
-                  Before running your first HTCondor job on a Personal AP, you must
-                  create an account on CHTC's Slurm cluster and let us know about 
-                  your project's resource requirements.
+                  A Personal AP is a dedicated container environment you can use to manage your HTCondor workloads. 
+                  Before running your first HTCondor job, create an account on CHTC's Slurm cluster and let us know 
+                  about your project's resource requirements.
                 </span>  
               }
             </p>

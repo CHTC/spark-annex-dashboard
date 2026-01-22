@@ -6,3 +6,5 @@ pyjwt
 requests
 cryptography
 sqlalchemy
+kubernetes
+htcondor
