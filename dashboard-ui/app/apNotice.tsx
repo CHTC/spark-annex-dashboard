@@ -18,7 +18,7 @@ export default function APNotice({data, isLoading}: APNoticeProps) {
       </p>
     )
   }
-  else if (data && data.dashboard_status === DashboardRequestStatus.NOT_REQUESTED) {
+  else if (data && data.dashboard_request_status === DashboardRequestStatus.NOT_REQUESTED) {
     return (
       <p className="text-md text-gray-600 mb-8">
         Please let us know about your expected workflows. This will help us right-size your AP. 
@@ -27,7 +27,7 @@ export default function APNotice({data, isLoading}: APNoticeProps) {
         standard configuration.
       </p>
     )
-  } else if (data && data.dashboard_status === DashboardRequestStatus.REQUEST_RECEIVED) {
+  } else if (data && data.dashboard_request_status === DashboardRequestStatus.REQUEST_RECEIVED) {
     return (
       <p className="text-md text-gray-600 mb-8">
         We have received your request for a Personal AP with the following parameters. 
@@ -35,7 +35,7 @@ export default function APNotice({data, isLoading}: APNoticeProps) {
         will contact you if we need any additional information.
       </p>
     )
-  } else if (data && data.dashboard_status === DashboardRequestStatus.IN_PROGRESS) {
+  } else if (data && data.dashboard_request_status === DashboardRequestStatus.IN_PROGRESS) {
     return (
       <p className="text-md text-gray-600 mb-8">
         Your request for a Personal AP with the following parameters has been approved. 

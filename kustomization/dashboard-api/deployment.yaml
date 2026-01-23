@@ -12,6 +12,7 @@ spec:
       labels:
         app: dashboard-api
     spec:
+      serviceAccountName: dashboard-api-pod-read
       containers:
       - name: dashboard-api
         image: hub.opensciencegrid.org/mwestphall/personal-ap-dashboard-api:latest

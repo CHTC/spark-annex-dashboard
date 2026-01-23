@@ -17,10 +17,23 @@ export interface DashboardRequest {
   local_universe: boolean,
 }
 
+export type DashboardHealth = "Healthy" | "Poor" | "Unknown";
+
+export interface LiveDashboardStatus {
+    pod_health: DashboardHealth
+    pod_health_reason: string
+
+    collector_health: DashboardHealth
+    collector_health_reason: string
+
+    dashboard_health: DashboardHealth
+    dashboard_health_reason: string
+}
 
 export interface UserInfo {
   user_id: string;
   ldap_authorized: boolean;
-  dashboard_status: DashboardRequestStatus;
-  dashboard_info?: DashboardRequest;
+  dashboard_request_status: DashboardRequestStatus;
+  dashboard_request_info?: DashboardRequest;
+  live_dashboard_status?: LiveDashboardStatus;
 }

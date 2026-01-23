@@ -42,8 +42,8 @@ export default function APForm({data, onSubmit}: APFormProps) {
   });
 
   useEffect(() => {
-    if(data && data.dashboard_status !== DashboardRequestStatus.NOT_REQUESTED && data.dashboard_info){
-      setFormData(data.dashboard_info);
+    if(data && data.dashboard_request_status !== DashboardRequestStatus.NOT_REQUESTED && data.dashboard_request_info){
+      setFormData(data.dashboard_request_info);
     }
   }, [data]);
 
@@ -80,7 +80,7 @@ export default function APForm({data, onSubmit}: APFormProps) {
     }
   };
 
-  const disabled = data.dashboard_status !== DashboardRequestStatus.NOT_REQUESTED;
+  const disabled = data.dashboard_request_status !== DashboardRequestStatus.NOT_REQUESTED;
 
   return (
     <form onSubmit={handleSubmit}>

@@ -21,9 +21,24 @@ class DashboardRequestInfo(BaseModel):
             local_universe = db_model.local_universe,
         )
 
+
+class LiveDashboardStatus(BaseModel):
+    # Populated by reading pod status from k8s API
+    pod_health: str
+    pod_health_reason: str
+
+
+    # Populated by running condor_status against the AP's condor collector
+    collector_health: str
+    collector_health_reason: str
+
+    # Populated by sending an HTTP request to the AP's dashboard web server
+    dashboard_health: str
+    dashboard_health_reason: str
+
 class UserInfo(BaseModel):
     user_id: str
     ldap_authorized: bool
-    dashboard_status: DashboardRequestStatus
-    dashboard_info: DashboardRequestInfo | None = None
-
+    dashboard_request_status: DashboardRequestStatus
+    dashboard_request_info: DashboardRequestInfo | None
+    live_dashboard_status: LiveDashboardStatus | None = None

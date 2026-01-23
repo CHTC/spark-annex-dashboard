@@ -9,6 +9,7 @@ import useSWR from "swr"
 import APNotice from "./apNotice";
 import { useEffect, useState } from "react";
 import Header from "./header";
+import APStatus from "./apStatus";
 
 const fetcher = (input: string) => fetch(input).then((res) => res.json())
 
@@ -32,8 +33,12 @@ export default function Home() {
               Personal Access Point - Getting Started
             </h1>
             <p className="text-md text-gray-600">
-              {currentData && currentData.dashboard_status === DashboardRequestStatus.COMPLETE ?
-                "" :
+              {currentData && currentData.dashboard_request_status === DashboardRequestStatus.COMPLETE ?
+                <span>
+                  Your personal AP has been provisioned by the Infrasturcture Services Team. Check the health of
+                  your AP below.
+                </span>  
+                :
                 <span>
                   A Personal AP is a dedicated container environment you can use to manage your HTCondor workloads. 
                   Before running your first HTCondor job, create an account on CHTC's Slurm cluster and let us know 
@@ -54,16 +59,16 @@ export default function Home() {
             </h2>
             <APNotice data={currentData} isLoading={isLoading}/>
 
-            {currentData && currentData.ldap_authorized && currentData.dashboard_status !== DashboardRequestStatus.COMPLETE &&
+            {currentData && currentData.ldap_authorized && currentData.dashboard_request_status !== DashboardRequestStatus.COMPLETE &&
               <APForm data={currentData} onSubmit={(newData)=>setCurrentData({
                 ...currentData,
-                dashboard_status: DashboardRequestStatus.REQUEST_RECEIVED,
-                dashboard_info: newData,
+                dashboard_request_status: DashboardRequestStatus.REQUEST_RECEIVED,
+                dashboard_request_info: newData,
               })}/>
             }
 
-            {currentData && currentData.dashboard_status === DashboardRequestStatus.COMPLETE &&
-              <p>TODO: Live Dashboard</p>
+            {currentData && currentData.dashboard_request_status === DashboardRequestStatus.COMPLETE &&
+              <APStatus data={currentData} />
             }
           </div>
         </div>
