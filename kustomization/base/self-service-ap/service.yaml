@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: self-service-ap
+spec:
+  selector:
+    app: self-service-ap
+  ports:
+  - name: htcondor
+    protocol: TCP
+    port: 9618
+    targetPort: 9618
+  - name: http
+    protocol: TCP
+    port: 8888
+    targetPort: 8888
+---

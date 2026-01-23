@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: self-service-ap
+spec:
+  template:
+    spec:
+      containers:
+      - name: submit
+        env:
+        - name: _CONDOR_TCP_FORWARDING_HOST
+          value: westphall-self-service-ap.default.svc.cluster.local
+        - name: _CONDOR_SHARED_PORT_PORT
+          value: '9619'

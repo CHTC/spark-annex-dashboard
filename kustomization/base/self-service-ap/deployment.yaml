@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: self-service-ap
+  labels:
+    app: self-service-ap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: self-service-ap
+  template:
+    metadata:
+      labels:
+        app: self-service-ap
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: submit
+        image: hub.opensciencegrid.org/mwestphall/submit
+        env:
+        # Set `TCP_FORWARDING_HOST` via the environment, must be overriden via patch
+        - name: _CONDOR_TCP_FORWARDING_HOST
+          value: <service-name>.<namespace>.chtc.io
+        ports:
+        - containerPort: 9618
+          name: htcondor
+        - containerPort: 8888
+          name: jupyter
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        volumeMounts:
+        # Mount HTCondor annex configuration
+        - name: hpc-annex
+          mountPath: /etc/condor/config.d/20-hpc-annex.conf
+          subPath: 20-hpc-annex.conf
+      volumes:
+      # Volume-source definitions for the above volume mounts
+      - name: hpc-annex
+        configMap:
+          name: self-service-ap-hpc-annex

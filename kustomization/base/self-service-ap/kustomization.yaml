@@ -1,0 +1,9 @@
+resources:
+- deployment.yaml
+- service.yaml
+
+
+configMapGenerator:
+- name: self-service-ap-hpc-annex
+  files:
+  - 20-hpc-annex.conf

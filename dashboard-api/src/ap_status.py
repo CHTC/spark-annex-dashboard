@@ -11,7 +11,7 @@ LABEL_PATTERN = "app={netid}-self-service-ap"
 
 COLLECTOR_PATTERN = "{netid}-self-service-ap.{namespace}.svc.cluster.local:{port}?sock=ap_collector"
 
-DASHBOARD_PATTERN = "{netid}-self-service-ap.{namespace}.svc.cluster.local:{port}"
+DASHBOARD_PATTERN = "http://{netid}-self-service-ap.{namespace}.svc.cluster.local:{port}"
 
 
 config.load_incluster_config()
@@ -73,8 +73,8 @@ class DashboardStatusCheck():
         service = services.items[0]
 
         ports = service.spec.ports
-        self.htcondor_port = next((p.container_port for p in ports if p.name == "htcondor"), None)
-        self.dashboard_port = next((p.container_port for p in ports if p.name == "http"), None)
+        self.htcondor_port = next((p.port for p in ports if p.name == "htcondor"), None)
+        self.dashboard_port = next((p.port for p in ports if p.name == "http"), None)
 
         if not self.htcondor_port or not self.dashboard_port:
             self.pod_health = "Poor"
@@ -82,7 +82,7 @@ class DashboardStatusCheck():
             return
 
         self.pod_health = "Healthy"
-        self.pod_health_reason = "Container running"
+        self.pod_health_reason = "Dashboard container exists."
 
 
     def populate_collector_info(self):
@@ -103,8 +103,9 @@ class DashboardStatusCheck():
         dashboard_url = DASHBOARD_PATTERN.format(netid=self.netid, namespace=POD_NAMESPACE, port=self.dashboard_port)
 
         try:
-            resp = requests.head(dashboard_url, timeout=5)
-            if resp.status_code == 200:
+            # TODO Jupyter doesn't seem to support HEAD for some reason
+            resp = requests.get(dashboard_url, timeout=5)
+            if resp.status_code < 400:
                 self.dashboard_health = "Healthy"
                 self.dashboard_health_reason = "Dashboard web server is responding."
             else:
