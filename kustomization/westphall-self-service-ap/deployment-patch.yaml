@@ -12,3 +12,9 @@ spec:
           value: westphall-self-service-ap.default.svc.cluster.local
         - name: _CONDOR_SHARED_PORT_PORT
           value: '9619'
+        - name: JUPYTERHUB_SERVICE_PREFIX
+          value: /dashboards/westphall/
+        - name: NETID
+          value: westphall
+        - name: JUPYTER_TOKEN
+          value: ""
