@@ -10,11 +10,14 @@ import APNotice from "./apNotice";
 import { useEffect, useState } from "react";
 import Header from "./header";
 import APStatus from "./apStatus";
+import { getAPIUrl } from "./util";
 
 const fetcher = (input: string) => fetch(input).then((res) => res.json())
 
+
+
 export default function Home() {
-  const { data, error, isLoading } = useSWR<UserInfo>('http://localhost:5000/api/', fetcher)
+  const { data, error, isLoading } = useSWR<UserInfo>(getAPIUrl(), fetcher)
 
   const [currentData, setCurrentData] = useState<UserInfo | undefined>(undefined);
   useEffect(() => {

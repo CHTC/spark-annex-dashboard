@@ -4,6 +4,7 @@ import { DashboardRequest, DashboardRequestStatus, UserInfo } from '@/types/type
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { error } from 'console';
 import { useEffect, useState } from 'react';
+import { getAPIUrl } from './util';
 
 interface APFormProps {
   data: UserInfo;
@@ -15,7 +16,7 @@ const checkboxClass = "w-5 h-5 text-blue-600 rounded border-gray-300 cursor-poin
 
 
 const submitAPRequest = async (formData: DashboardRequest) => {
-  var response = await fetch('http://localhost:5000/api/ap-request', {
+  var response = await fetch(`${getAPIUrl()}/ap-request`, {
     method: 'POST',
     body: JSON.stringify(formData),
     headers: {
