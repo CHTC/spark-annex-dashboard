@@ -39,6 +39,6 @@ def get_user_info(request: Request) -> UserInfo:
 @app.post("/ap-request")
 def submit_ap_dashboard_request(dashboard_request: DashboardRequestInfo, request: Request) -> dict[str, str]:
     register_user_dashboard_request(request.state.user_id, dashboard_request)
-    # send_dashboard_request_notification(request.state.user_id, dashboard_request)
+    send_dashboard_request_notification(request.state.user_id, dashboard_request)
     return {"result":"ok"}
 
