@@ -7,3 +7,7 @@ services:
     image: hub.opensciencegrid.org/mwestphall/personal-ap-dashboard-ui:latest
     build:
       context: dashboard-ui
+  personal-ap:
+    image: hub.opensciencegrid.org/mwestphall/personal-ap:latest
+    build:
+      context: personal-ap

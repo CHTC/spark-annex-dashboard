@@ -1,0 +1,3 @@
+# Configure ssh client ControlMaster for multiple Slurm commands in demo
+ControlMaster auto
+ControlPath /home/submituser/.hpc-annex/master-%C

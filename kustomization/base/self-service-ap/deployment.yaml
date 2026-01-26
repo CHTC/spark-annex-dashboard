@@ -18,11 +18,15 @@ spec:
         fsGroup: 1000
       containers:
       - name: submit
-        image: hub.opensciencegrid.org/mwestphall/submit
+        image: hub.opensciencegrid.org/mwestphall/personal-ap
         env:
         # Set `TCP_FORWARDING_HOST` via the environment, must be overriden via patch
         - name: _CONDOR_TCP_FORWARDING_HOST
           value: <service-name>.<namespace>.chtc.io
+        - name: NETID
+          value: westphall
+        - name: JUPYTER_TOKEN
+          value: ""
         ports:
         - containerPort: 9618
           name: htcondor
