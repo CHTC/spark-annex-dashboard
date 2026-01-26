@@ -195,7 +195,7 @@ export default function APForm({data, onSubmit}: APFormProps) {
       {!disabled && !sendingForm.sending && 
         <div className="flex justify-between">
           <button
-            type="button"
+            type="submit"
             className="px-0 py-2 bg-none text-blue-600 font-medium rounded-md hover:text-blue-700 cursor-pointer"
           >
             Request Defaults

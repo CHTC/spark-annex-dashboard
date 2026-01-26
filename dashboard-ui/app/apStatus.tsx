@@ -69,13 +69,15 @@ export default function APStatus({data}: APStatusProps) {
             Report a Problem
           </button>
 
-          <button
-            type="button"
-            disabled={ !allHealthy }
-            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Go to AP Dashboard
-          </button>
+          <a href={`/dashboards/${data.user_id}/`} target="_blank">
+            <button
+              type="button"
+              disabled={ !allHealthy }
+              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Go to AP Dashboard
+            </button>
+          </a>
         </div>
       </div>
 
