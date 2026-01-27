@@ -16,7 +16,7 @@ const checkboxClass = "w-5 h-5 text-blue-600 rounded border-gray-300 cursor-poin
 
 
 const submitAPRequest = async (formData: DashboardRequest) => {
-  var response = await fetch(`${getAPIUrl()}/ap-request`, {
+  var response = await fetch(`${getAPIUrl()}ap-request/`, {
     method: 'POST',
     body: JSON.stringify(formData),
     headers: {
