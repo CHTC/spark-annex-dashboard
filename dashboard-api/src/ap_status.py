@@ -7,11 +7,11 @@ import requests
 
 POD_NAMESPACE = environ.get("DASHBOARD_NAMESPACE", "default")
 
-LABEL_PATTERN = "app={netid}-self-service-ap"
+LABEL_PATTERN = "app={netid}-personal-ap"
 
-COLLECTOR_PATTERN = "{netid}-self-service-ap.{namespace}.svc.cluster.local:{port}?sock=ap_collector"
+COLLECTOR_PATTERN = "{netid}-personal-ap.{namespace}.svc.cluster.local:{port}?sock=ap_collector"
 
-DASHBOARD_PATTERN = "http://{netid}-self-service-ap.{namespace}.svc.cluster.local:{port}/dashboards/{netid}/"
+DASHBOARD_PATTERN = "http://{netid}-personal-ap.{namespace}.svc.cluster.local:{port}/dashboards/{netid}/"
 
 
 config.load_incluster_config()

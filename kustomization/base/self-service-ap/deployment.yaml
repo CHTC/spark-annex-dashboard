@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: self-service-ap
+  name: -ap
   labels:
-    app: self-service-ap
+    app: -ap
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: self-service-ap
+      app: -ap
   template:
     metadata:
       labels:
-        app: self-service-ap
+        app: -ap
     spec:
       securityContext:
         fsGroup: 1000
@@ -41,4 +41,4 @@ spec:
       # Volume-source definitions for the above volume mounts
       - name: hpc-annex
         configMap:
-          name: self-service-ap-hpc-annex
+          name: -ap-hpc-annex

@@ -4,7 +4,7 @@ resources:
 - ldap
 - dashboard-ui
 - dashboard-api
-- westphall-self-service-ap
+- westphall--ap
 
 configMapGenerator:
 
