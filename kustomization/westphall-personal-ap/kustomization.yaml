@@ -1,6 +1,6 @@
 # Reference to the baseline definition of the  AP
 resources:
-- ../base/-ap/
+- ../base/personal-ap/
 
 # Prepend `$AP_USER_ID-` to the name of every created resource to distinguish them from other instances of the  AP in the same Namespace
 namePrefix: "westphall-"
@@ -8,7 +8,7 @@ namePrefix: "westphall-"
 # Add the `$AP_NAME` label to each created resource. Required so that the AP's network configuration objects can direct TCP traffic to the appropriate instance of the  AP container
 labels:
 - pairs:
-    app: westphall--ap
+    app: westphall-personal-ap
   includeSelectors: true
 
 # Update the internal configuration of the AP with references to the selected External DNS name
@@ -18,10 +18,10 @@ patches:
 - target:
     version: v1
     kind: Service
-    name: -ap
+    name: personal-ap
   path: service-patch.yaml
 - target:
     version: v1
     kind: Deployment
-    name: -ap
+    name: personal-ap
   path: deployment-port-patch.yaml

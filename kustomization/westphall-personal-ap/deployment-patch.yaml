@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: -ap
+  name: personal-ap
 spec:
   template:
     spec:
@@ -9,7 +9,7 @@ spec:
       - name: submit
         env:
         - name: _CONDOR_TCP_FORWARDING_HOST
-          value: westphall--ap.default.svc.cluster.local
+          value: westphall-personal-ap.default.svc.cluster.local
         - name: _CONDOR_SHARED_PORT_PORT
           value: '9619'
         - name: JUPYTERHUB_SERVICE_PREFIX

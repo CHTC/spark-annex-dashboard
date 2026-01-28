@@ -3,7 +3,7 @@ import smtplib
 from email.message import EmailMessage
 from api_models import DashboardRequestInfo
 
-SEND_EMAILS = os.environ['SEND_EMAILS']
+SEND_EMAILS = os.environ.get('SEND_EMAILS', "True").lower() != "false"
 
 def send_email(subject, content):
     """ Send an email with the given subject and content. Not configured for

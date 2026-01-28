@@ -4,6 +4,6 @@ resources:
 
 
 configMapGenerator:
-- name: -ap-hpc-annex
+- name: personal-ap-hpc-annex
   files:
   - 20-hpc-annex.conf

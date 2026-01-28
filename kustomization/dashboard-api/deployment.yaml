@@ -37,6 +37,8 @@ spec:
           value: "sqlite:////tmp/dashboard.db"
 
         # Email configuration
+        - name: SEND_EMAILS
+          value: "false"
         - name: FROM_ADDRESS
           value: chtc-infrastructure@g-groups.wisc.edu
         - name: TO_ADDRESS
