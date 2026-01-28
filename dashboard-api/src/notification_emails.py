@@ -3,11 +3,15 @@ import smtplib
 from email.message import EmailMessage
 from api_models import DashboardRequestInfo
 
+SEND_EMAILS = os.environ['SEND_EMAILS']
 
 def send_email(subject, content):
     """ Send an email with the given subject and content. Not configured for
     use outside the UW SMPT relay.
     """
+    if not SEND_EMAILS:
+        print("Would send email:", subject, content)
+        return
     msg = EmailMessage()
     msg.set_content(content)
     msg['Subject'] = subject
@@ -30,4 +34,11 @@ Concurrent Jobs: {dashboard_request.concurrent_jobs}
 DAGMan: {'Yes' if dashboard_request.dagman else 'No'}
 Local Universe: {'Yes' if dashboard_request.local_universe else 'No'}
 """
+    send_email(subject, content)
+
+
+def send_dashboard_cancellation_notification(netid: str):
+    """Send a basic plaintext email notification about the cancellation of a dashboard request."""
+    subject = f"Cancelled AP Dashboard Request from {netid}"
+    content = f"""User {netid} has cancelled their AP dashboard request."""
     send_email(subject, content)

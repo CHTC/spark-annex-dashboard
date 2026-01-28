@@ -5,7 +5,7 @@ from auth_handler import verify_auth_headers
 from ldap_utils import check_ldap_user_in_group
 from api_models import UserInfo, DashboardRequestInfo
 from db import *
-from notification_emails import send_dashboard_request_notification
+from notification_emails import *
 from ap_status import get_live_dashboard_status
 import re
 
@@ -26,7 +26,7 @@ async def auth_middleware(request: Request, call_next):
 def get_user_info(request: Request) -> UserInfo:
     print(f"User ID: {request.state.user_id}")
     register_user_if_not_exists(request.state.user_id)
-    dashboard_status, dashboard_info = get_dashboard_status_for_netid(request.state.user_id)
+    dashboard_status, dashboard_info = get_user_dashboard_status(request.state.user_id)
     running_dashboard_status = get_live_dashboard_status(request.state.user_id) if dashboard_status == DashboardRequestStatus.COMPLETE else None
     return UserInfo(
         user_id=request.state.user_id,
@@ -42,3 +42,9 @@ def submit_ap_dashboard_request(dashboard_request: DashboardRequestInfo, request
     send_dashboard_request_notification(request.state.user_id, dashboard_request)
     return {"result":"ok"}
 
+
+@app.delete("/ap-request")
+def delete_ap_dashboard_request(request: Request) -> dict[str, str]:
+    cancel_user_dashboard_request(request.state.user_id)
+    send_dashboard_cancellation_notification(request.state.user_id)
+    return {"result":"ok"}

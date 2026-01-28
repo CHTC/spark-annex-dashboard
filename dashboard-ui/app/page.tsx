@@ -63,11 +63,19 @@ export default function Home() {
             <APNotice data={currentData} isLoading={isLoading}/>
 
             {currentData && currentData.ldap_authorized && currentData.dashboard_request_status !== DashboardRequestStatus.COMPLETE &&
-              <APForm data={currentData} onSubmit={(newData)=>setCurrentData({
-                ...currentData,
-                dashboard_request_status: DashboardRequestStatus.REQUEST_RECEIVED,
-                dashboard_request_info: newData,
-              })}/>
+              <APForm 
+                data={currentData} 
+                onSubmit={(newData)=>setCurrentData({
+                  ...currentData,
+                  dashboard_request_status: DashboardRequestStatus.REQUEST_RECEIVED,
+                  dashboard_request_info: newData,
+                })}
+                onCancel={()=>setCurrentData({
+                  ...currentData,
+                  dashboard_request_status: DashboardRequestStatus.NOT_REQUESTED,
+                  dashboard_request_info: undefined,
+                })}
+              />
             }
 
             {currentData && currentData.dashboard_request_status === DashboardRequestStatus.COMPLETE &&

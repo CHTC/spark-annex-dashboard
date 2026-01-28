@@ -2,13 +2,13 @@
 
 import { DashboardRequest, DashboardRequestStatus, UserInfo } from '@/types/types';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { error } from 'console';
 import { useEffect, useState } from 'react';
 import { getAPIUrl } from './util';
 
 interface APFormProps {
   data: UserInfo;
   onSubmit: (formData: DashboardRequest) => void;
+  onCancel: () => void;
 }
 
 const textInputClass = "w-full px-4 py-2 border border-gray-300 rounded-md disabled:bg-gray-100 disabled:text-gray-500"
@@ -26,8 +26,17 @@ const submitAPRequest = async (formData: DashboardRequest) => {
   return response;
 }
 
+const submitAPDeleteRequest = async () => {
+  var response = await fetch(`${getAPIUrl()}ap-request`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  return response;
+}
 
-export default function APForm({data, onSubmit}: APFormProps) {
+export default function APForm({data, onSubmit, onCancel}: APFormProps) {
   const [formData, setFormData] = useState<DashboardRequest>({
     job_input_size: 1,
     job_output_size: 1,
@@ -78,6 +87,20 @@ export default function APForm({data, onSubmit}: APFormProps) {
     } else {
       setSendingForm({sending: false, error: ""});
       onSubmit(formData);
+    }
+  };
+
+  const handleCancel = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log('Form cancelled.');
+
+    setSendingForm({sending: true, error: ""});
+    var response = await submitAPDeleteRequest();
+    if (!response.ok) {
+      setSendingForm({sending: false, error: `Error cancelling request: ${response.statusText}`});
+    } else {
+      setSendingForm({sending: false, error: ""});
+      onCancel();  
     }
   };
 
@@ -191,11 +214,10 @@ export default function APForm({data, onSubmit}: APFormProps) {
         </label>
       </div>
 
-      {/* Submit Button */}
+      {/* Submit Buttons */}
       {!disabled && !sendingForm.sending && 
         <div className="flex justify-between">
           <button
-            type="submit"
             className="px-0 py-2 bg-none text-blue-600 font-medium rounded-md hover:text-blue-700 cursor-pointer"
           >
             Request Defaults
@@ -209,7 +231,8 @@ export default function APForm({data, onSubmit}: APFormProps) {
           </button>
         </div>
       }
-      {sendingForm.sending && 
+      {/* Request in progress spinner for submit button */}
+      {!disabled && sendingForm.sending &&
         <div className="flex justify-end">
           <button
             type="button"
@@ -219,13 +242,26 @@ export default function APForm({data, onSubmit}: APFormProps) {
           </button>
         </div>
       }
-      {disabled &&
+      {/* Cancel button */}
+      {disabled && !sendingForm.sending &&
         <div className="flex justify-end">
           <button
             type="button"
+            onClick={(e)=>handleCancel(e)}
             className="px-6 py-2 bg-none text-red-600 font-medium rounded-md hover:text-red-700 cursor-pointer"
           >
             Cancel Request
+          </button>
+        </div>
+      }
+      {/* Request in progress spinner for cancel button */}
+      {disabled && sendingForm.sending &&
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="px-6 py-2 bg-none text-red-600 rounded-md"
+          >
+            <ArrowPathIcon className='size-6 animate-spin'/>
           </button>
         </div>
       }
