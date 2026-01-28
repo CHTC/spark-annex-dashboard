@@ -35,8 +35,8 @@ export default function APStatus({data}: APStatusProps) {
           :
           <span> One or more status checks on your Personal AP are 
           {" "}<span className={`${HealthColors["Poor"]} font-bold`}>Unhealthy.</span>{" "}
-          If this problem persists, please report the issue via the "Report a Problem" 
-          button below.
+          If this problem persists, please reach out to the CHTC infrastructure services team
+          via chtc-infrastructure@g-groups.wisc.edu for assistance.
           </span>
         }
         </p>
@@ -61,13 +61,13 @@ export default function APStatus({data}: APStatusProps) {
         <p className="text-sm text-gray-600 mb-6">
           <span>{statusData.dashboard_health_reason || "Unable to complete health check"}</span>
         </p>
-        <div className="flex justify-between">
-          <button
+        <div className="flex justify-end">
+          {/* <button
             type="button"
             className="px-0 py-2 bg-none text-blue-600 font-medium rounded-md hover:text-blue-700 cursor-pointer"
           >
             Report a Problem
-          </button>
+          </button> */}
 
           <a href={`/dashboards/${data.user_id}/`} target="_blank">
             <button
