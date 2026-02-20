@@ -7,7 +7,7 @@ import db
 from celery import Celery
 from celery.schedules import crontab
 from ldap_utils import check_ldap_user_in_group
-from notification_emails import send_chtc_account_provisioned_notification
+from notification_emails import send_chtc_account_provisioned_notification, send_slurm_account_provisioned_notification
 
 app = Celery()
 
@@ -25,6 +25,9 @@ def poll_user_ldap_status():
         ldap_status = check_ldap_user_in_group(user.netid)
         if ldap_status.chtc_account != user.chtc_account or ldap_status.spark_account != user.spark_account:
             db.update_user_chtc_account_status(user.netid, ldap_status.chtc_account)
-            if ldap_status.chtc_account:
+            if ldap_status.chtc_account and ldap_status.spark_account:
                 print(f"User {user.netid} has newly-detected LDAP access. Notifying.")
+                send_slurm_account_provisioned_notification(user.netid)
+            elif ldap_status.chtc_account:
+                print(f"User {user.netid} has newly detected CHTC access, but not LDAP access. Notifying")
                 send_chtc_account_provisioned_notification(user.netid)

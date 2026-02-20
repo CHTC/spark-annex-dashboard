@@ -30,10 +30,15 @@ export interface LiveDashboardStatus {
     dashboard_health_reason: string
 }
 
+export interface CHTCAccountStatus {
+  chtc_account: DashboardRequestStatus;
+  spark_account: DashboardRequestStatus;
+}
 export interface UserInfo {
   user_id: string;
-  chtc_account: boolean;
-  ldap_authorized: boolean;
+
+  chtc_account : CHTCAccountStatus;   
+
   dashboard_request_status: DashboardRequestStatus;
   dashboard_request_info?: DashboardRequest;
   live_dashboard_status?: LiveDashboardStatus;

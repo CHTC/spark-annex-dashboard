@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image";
-import SparkAccount from "./spark-account";
+import SparkAccount from "./sparkAccount";
 import APForm from "./apForm";
 
 import { DashboardRequest, DashboardRequestStatus, UserInfo } from "@/types/types"
@@ -44,7 +44,8 @@ export default function Home() {
                 :
                 <span>
                   A Personal AP is a dedicated container environment you can use to manage your HTCondor workloads. 
-                  Before running your first HTCondor job, create an account on CHTC's Slurm cluster and let us know 
+                  Before running your first HTCondor job, please ensure that you've registered for a user account with CHTC,
+                  requested access to our Spark Slurm cluster, and let us know 
                   about your project's resource requirements.
                 </span>  
               }
@@ -62,7 +63,9 @@ export default function Home() {
             </h2>
             <APNotice data={currentData} isLoading={isLoading}/>
 
-            {currentData && currentData.ldap_authorized && currentData.dashboard_request_status !== DashboardRequestStatus.COMPLETE &&
+            {currentData && 
+              currentData.chtc_account.spark_account == DashboardRequestStatus.COMPLETE && 
+              currentData.dashboard_request_status !== DashboardRequestStatus.COMPLETE &&
               <APForm 
                 data={currentData} 
                 onSubmit={(newData)=>setCurrentData({
