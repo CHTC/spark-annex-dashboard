@@ -32,6 +32,7 @@ export interface LiveDashboardStatus {
 
 export interface UserInfo {
   user_id: string;
+  chtc_account: boolean;
   ldap_authorized: boolean;
   dashboard_request_status: DashboardRequestStatus;
   dashboard_request_info?: DashboardRequest;

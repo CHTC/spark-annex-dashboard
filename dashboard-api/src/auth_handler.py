@@ -12,7 +12,7 @@ def verify_auth_headers(request: Request, app: FastAPI) -> Union[dict, None]:
     if auth_header:
         try:
             token = auth_header.split(" ")[1]
-            if not app.state.signing_key:
+            if not hasattr(app.state, "signing_key"):
                 jwks_client = jwt.PyJWKClient(JWKS_URL)
                 app.state.signing_key = jwks_client.get_signing_key_from_jwt(token)
             decoded_token = jwt.decode(token, app.state.signing_key, audience=AUDIENCE, algorithms=["RS256"])

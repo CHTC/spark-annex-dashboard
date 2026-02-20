@@ -90,8 +90,8 @@ spec:
           gidNumber: 100
           homeDirectory: /home/westphall
           loginShell: /bin/bash
-          isMemberOf: foo
           EOF
+          #isMemberOf: foo
           
           cat /tmp/person.ldif
           ldapadd -x -D "cn=admin,dc=chtc,dc=wisc,dc=edu" -w admin -H ldap://localhost:1389 -f /tmp/person.ldif || true
