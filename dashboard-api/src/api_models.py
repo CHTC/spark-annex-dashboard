@@ -38,6 +38,7 @@ class LiveDashboardStatus(BaseModel):
 
 class UserInfo(BaseModel):
     user_id: str
+    chtc_account: bool
     ldap_authorized: bool
     dashboard_request_status: DashboardRequestStatus
     dashboard_request_info: DashboardRequestInfo | None

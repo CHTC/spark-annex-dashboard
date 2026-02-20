@@ -12,7 +12,7 @@ from notification_emails import send_chtc_account_provisioned_notification
 app = Celery()
 
 @app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
+def setup_periodic_tasks(sender: Celery, **kwargs):
     # Calls poll_user_ldap_status every minute
     sender.add_periodic_task(crontab(minute='*', hour='*'), poll_user_ldap_status.s())
 
@@ -26,4 +26,5 @@ def poll_user_ldap_status():
         if ldap_status.chtc_account != user.chtc_account or ldap_status.spark_account != user.spark_account:
             db.update_user_chtc_account_status(user.netid, ldap_status.chtc_account)
             if ldap_status.chtc_account:
+                print(f"User {user.netid} has newly-detected LDAP access. Notifying.")
                 send_chtc_account_provisioned_notification(user.netid)

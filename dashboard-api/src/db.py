@@ -19,13 +19,15 @@ Base.metadata.create_all(engine)
 DbSession = sessionmaker(bind=engine)
 
 
-def register_user_if_not_exists(netid: str):
+def register_user_if_not_exists(netid: str, user_status: UserLDAPStatus):
     """ Given a user ID, create a user entry in the database """
     with DbSession() as session:
         user = session.scalar(select(UserModel).where(UserModel.netid == netid))
 
         if user is None:
             user = UserModel(netid = netid)
+            user.chtc_account = user_status.chtc_account
+            user.spark_account = user_status.spark_account
             session.add(user)
             session.commit()
 
