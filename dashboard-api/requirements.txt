@@ -8,3 +8,4 @@ cryptography
 sqlalchemy
 kubernetes
 htcondor
+celery

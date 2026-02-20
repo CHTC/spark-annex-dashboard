@@ -17,6 +17,9 @@ class UserModel(Base):
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     netid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
+    chtc_account: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    spark_account: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     dashboard_requests: Mapped[List["UserDashboardRequestsModel"]] = relationship(back_populates="user")

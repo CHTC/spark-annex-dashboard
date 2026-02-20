@@ -5,6 +5,7 @@ from typing import Optional
 import urllib.parse
 from db_models import *
 from api_models import DashboardRequestInfo
+from ldap_utils import UserLDAPStatus
 
 from fastapi import HTTPException
 
@@ -85,3 +86,20 @@ def cancel_user_dashboard_request(netid: str):
         active_request.request_status = DashboardRequestStatus.DELETED
         session.add(active_request)
         session.commit()
+
+def get_not_fully_registered_users() -> list[UserModel]:
+    """Get list of users whose LDAP status in the database does not match their actual LDAP status."""
+    with DbSession() as session:
+        users = session.scalars(select(UserModel)
+            .where((UserModel.chtc_account == False) | (UserModel.spark_account == False))
+        ).all()
+        return users
+
+def update_user_chtc_account_status(netid: str, account_status: UserLDAPStatus):
+    with DbSession() as session:
+        user = session.scalar(select(UserModel).where(UserModel.netid == netid))
+        if user is not None:
+            user.chtc_account = account_status.chtc_account
+            user.spark_account = account_status.spark_account
+            session.add(user)
+            session.commit()

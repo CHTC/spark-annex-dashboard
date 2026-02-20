@@ -9,6 +9,7 @@ COPY ./requirements.txt /code/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
+COPY init.sh /usr/local/bin/init.sh
 COPY ./src /code/app
 
-CMD ["fastapi", "run", "app/app.py", "--port", "80"]
+CMD ["/usr/local/bin/init.sh"]

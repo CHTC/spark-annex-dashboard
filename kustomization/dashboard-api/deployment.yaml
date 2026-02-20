@@ -14,6 +14,7 @@ spec:
     spec:
       serviceAccountName: dashboard-api-pod-read
       containers:
+      # Main dashboard API pod
       - name: dashboard-api
         image: hub.opensciencegrid.org/mwestphall/personal-ap-dashboard-api:latest
         imagePullPolicy: Always
@@ -45,3 +46,8 @@ spec:
           value: westphall@wisc.edu
         - name: SMTP_HOST
           value: smtp.wiscmail.wisc.edu 
+      # Connection broker for scheduled jobs
+      - name: rabbitmq
+        image: rabbitmq
+        ports:
+        - containerPort: 5672
