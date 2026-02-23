@@ -24,7 +24,7 @@ def poll_user_ldap_status():
     for user in users:
         ldap_status = check_ldap_user_in_group(user.netid)
         if ldap_status.chtc_account != user.chtc_account or ldap_status.spark_account != user.spark_account:
-            db.update_user_chtc_account_status_from_ldap(user.netid, ldap_status.chtc_account)
+            db.update_user_chtc_account_status_from_ldap(user.netid, ldap_status)
             if ldap_status.chtc_account and ldap_status.spark_account:
                 print(f"User {user.netid} has newly-detected LDAP access. Notifying.")
                 send_slurm_account_provisioned_notification(user.netid)
