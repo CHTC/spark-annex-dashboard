@@ -26,6 +26,8 @@ class UserModel(Base):
 
     chtc_account: Mapped[RequestStatus] = mapped_column(Enum(RequestStatus), nullable=False)
     spark_account: Mapped[RequestStatus] = mapped_column(Enum(RequestStatus), nullable=False)
+    assistance_requested: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 

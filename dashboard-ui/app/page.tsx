@@ -82,7 +82,16 @@ export default function Home() {
             }
 
             {currentData && currentData.dashboard_request_status === RequestStatus.COMPLETE &&
-              <APStatus data={currentData} />
+              <APStatus 
+                data={currentData} 
+                onSubmit={()=>setCurrentData({
+                  ...currentData,
+                  live_dashboard_status: {
+                    ...currentData.live_dashboard_status!,
+                    assistance_requested: true
+                  }
+                })}
+              />
             }
           </div>
         </div>

@@ -20,20 +20,27 @@ export interface DashboardRequest {
 export type DashboardHealth = "Healthy" | "Poor" | "Unknown";
 
 export interface LiveDashboardStatus {
+    // Whether the AP pod itself is running
     pod_health: DashboardHealth
     pod_health_reason: string
 
+    // Whether HTCondor is running inside the AP pod
     collector_health: DashboardHealth
     collector_health_reason: string
 
+    // Whether the web dashboard is running inside the AP pod
     dashboard_health: DashboardHealth
     dashboard_health_reason: string
+
+    // Whether the user has requested assistance restoring the health of their dashboard
+    assistance_requested: boolean
 }
 
 export interface CHTCAccountStatus {
   chtc_account: RequestStatus;
   spark_account: RequestStatus;
 }
+
 export interface UserInfo {
   user_id: string;
 

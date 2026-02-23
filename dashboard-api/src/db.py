@@ -28,6 +28,7 @@ def register_user_if_not_exists(netid: str, user_status: UserLDAPStatus):
             user = UserModel(netid = netid)
             user.chtc_account = RequestStatus.COMPLETE if user_status.chtc_account else RequestStatus.NOT_REQUESTED
             user.spark_account = RequestStatus.COMPLETE if user_status.spark_account else RequestStatus.NOT_REQUESTED
+            user.assistance_requested = False
             session.add(user)
             session.commit()
         return user
@@ -105,5 +106,15 @@ def update_user_chtc_account_status_from_ldap(netid: str, account_status: UserLD
             return
         user.chtc_account = RequestStatus.COMPLETE if account_status.chtc_account else user.chtc_account
         user.spark_account = RequestStatus.COMPLETE if account_status.spark_account else user.spark_account
+        session.add(user)
+        session.commit()
+
+
+def mark_user_assistance_requested(netid: str):
+    with DbSession() as session:
+        user = session.scalar(select(UserModel).where(UserModel.netid == netid))
+        if user is None:
+            return
+        user.assistance_requested = True
         session.add(user)
         session.commit()
