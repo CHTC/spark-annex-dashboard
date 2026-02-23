@@ -1,6 +1,6 @@
 'use client';
 
-import { DashboardRequest, DashboardRequestStatus, UserInfo } from '@/types/types';
+import { DashboardRequest, RequestStatus, UserInfo } from '@/types/types';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import { getAPIUrl } from './util';
@@ -52,7 +52,7 @@ export default function APForm({data, onSubmit, onCancel}: APFormProps) {
   });
 
   useEffect(() => {
-    if(data && data.dashboard_request_status !== DashboardRequestStatus.NOT_REQUESTED && data.dashboard_request_info){
+    if(data && data.dashboard_request_status !== RequestStatus.NOT_REQUESTED && data.dashboard_request_info){
       setFormData(data.dashboard_request_info);
     }
   }, [data]);
@@ -104,7 +104,7 @@ export default function APForm({data, onSubmit, onCancel}: APFormProps) {
     }
   };
 
-  const disabled = data.dashboard_request_status !== DashboardRequestStatus.NOT_REQUESTED;
+  const disabled = data.dashboard_request_status !== RequestStatus.NOT_REQUESTED;
 
   return (
     <form onSubmit={handleSubmit}>

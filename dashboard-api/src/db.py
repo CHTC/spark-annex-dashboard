@@ -26,21 +26,22 @@ def register_user_if_not_exists(netid: str, user_status: UserLDAPStatus):
 
         if user is None:
             user = UserModel(netid = netid)
-            user.chtc_account = user_status.chtc_account
-            user.spark_account = user_status.spark_account
+            user.chtc_account = RequestStatus.COMPLETE if user_status.chtc_account else RequestStatus.NOT_REQUESTED
+            user.spark_account = RequestStatus.COMPLETE if user_status.spark_account else RequestStatus.NOT_REQUESTED
             session.add(user)
             session.commit()
+        return user
 
-def get_user_dashboard_status(netid: str) -> tuple[DashboardRequestStatus, DashboardRequestInfo | None]:
+def get_user_dashboard_status(netid: str) -> tuple[RequestStatus, DashboardRequestInfo | None]:
     """ Given a user ID, return the status of that user's dashboard request."""
     with DbSession() as session:
         user = session.scalar(select(UserModel).where(UserModel.netid == netid))
         active_request = session.scalar(select(UserDashboardRequestsModel)
             .where(UserDashboardRequestsModel.user_id == user.id)
-            .where(UserDashboardRequestsModel.request_status != DashboardRequestStatus.DELETED)
+            .where(UserDashboardRequestsModel.request_status != RequestStatus.DELETED)
         )
         if not active_request:
-            return DashboardRequestStatus.NOT_REQUESTED, None
+            return RequestStatus.NOT_REQUESTED, None
 
         return active_request.request_status, DashboardRequestInfo.from_db_model(active_request)
 
@@ -52,12 +53,12 @@ def register_user_dashboard_request(netid: str, dashboard_request: DashboardRequ
         if not user:
             raise HTTPException(400, "User not registered")
 
-        if any(r.request_status != DashboardRequestStatus.DELETED for r in user.dashboard_requests):
+        if any(r.request_status != RequestStatus.DELETED for r in user.dashboard_requests):
             raise HTTPException(400, "User has already requested a dashboard")
 
         request = UserDashboardRequestsModel(
             user_id = user.id,
-            request_status = DashboardRequestStatus.REQUEST_RECEIVED,
+            request_status = RequestStatus.REQUEST_RECEIVED,
             dashboard_name = user.netid,
 
             job_input_size_gb = dashboard_request.job_input_size,
@@ -80,12 +81,12 @@ def cancel_user_dashboard_request(netid: str):
         user = session.scalar(select(UserModel).where(UserModel.netid == netid))
         active_request = session.scalar(select(UserDashboardRequestsModel)
             .where(UserDashboardRequestsModel.user_id == user.id)
-            .where(UserDashboardRequestsModel.request_status != DashboardRequestStatus.DELETED)
+            .where(UserDashboardRequestsModel.request_status != RequestStatus.DELETED)
         )
         if not active_request:
             raise HTTPException(400, "User has no active dashboard request")
 
-        active_request.request_status = DashboardRequestStatus.DELETED
+        active_request.request_status = RequestStatus.DELETED
         session.add(active_request)
         session.commit()
 
@@ -93,15 +94,16 @@ def get_not_fully_registered_users() -> list[UserModel]:
     """Get list of users whose LDAP status in the database does not match their actual LDAP status."""
     with DbSession() as session:
         users = session.scalars(select(UserModel)
-            .where((UserModel.chtc_account == False) | (UserModel.spark_account == False))
+            .where((UserModel.chtc_account != RequestStatus.COMPLETE) | (UserModel.spark_account != RequestStatus.COMPLETE))
         ).all()
         return users
 
-def update_user_chtc_account_status(netid: str, account_status: UserLDAPStatus):
+def update_user_chtc_account_status_from_ldap(netid: str, account_status: UserLDAPStatus):
     with DbSession() as session:
         user = session.scalar(select(UserModel).where(UserModel.netid == netid))
-        if user is not None:
-            user.chtc_account = account_status.chtc_account
-            user.spark_account = account_status.spark_account
-            session.add(user)
-            session.commit()
+        if user is None:
+            return
+        user.chtc_account = RequestStatus.COMPLETE if account_status.chtc_account else user.chtc_account
+        user.spark_account = RequestStatus.COMPLETE if account_status.spark_account else user.spark_account
+        session.add(user)
+        session.commit()

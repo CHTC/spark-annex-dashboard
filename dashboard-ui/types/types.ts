@@ -1,4 +1,4 @@
-export enum DashboardRequestStatus {
+export enum RequestStatus {
   NOT_REQUESTED =  "Not requested",
   REQUEST_RECEIVED = "Request received",
   IN_PROGRESS = "In progress",
@@ -31,15 +31,15 @@ export interface LiveDashboardStatus {
 }
 
 export interface CHTCAccountStatus {
-  chtc_account: DashboardRequestStatus;
-  spark_account: DashboardRequestStatus;
+  chtc_account: RequestStatus;
+  spark_account: RequestStatus;
 }
 export interface UserInfo {
   user_id: string;
 
   chtc_account : CHTCAccountStatus;   
 
-  dashboard_request_status: DashboardRequestStatus;
+  dashboard_request_status: RequestStatus;
   dashboard_request_info?: DashboardRequest;
   live_dashboard_status?: LiveDashboardStatus;
 }

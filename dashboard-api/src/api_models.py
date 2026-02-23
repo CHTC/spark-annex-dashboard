@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from db_models import DashboardRequestStatus, UserDashboardRequestsModel
+from db_models import RequestStatus, UserDashboardRequestsModel
 
 class DashboardRequestInfo(BaseModel):
     job_input_size: int
@@ -36,10 +36,12 @@ class LiveDashboardStatus(BaseModel):
     dashboard_health: str
     dashboard_health_reason: str
 
+class ChtcAccountStatus(BaseModel):
+    chtc_account: RequestStatus
+    spark_account: RequestStatus
 class UserInfo(BaseModel):
     user_id: str
-    chtc_account: bool
-    ldap_authorized: bool
-    dashboard_request_status: DashboardRequestStatus
+    chtc_account: ChtcAccountStatus
+    dashboard_request_status: RequestStatus
     dashboard_request_info: DashboardRequestInfo | None
     live_dashboard_status: LiveDashboardStatus | None = None

@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import FastAPI, HTTPException, Request, Depends
 from auth_handler import verify_auth_headers
 from ldap_utils import check_ldap_user_in_group
-from api_models import UserInfo, DashboardRequestInfo
+from api_models import UserInfo, DashboardRequestInfo, ChtcAccountStatus
 import db
 from notification_emails import *
 from ap_status import get_live_dashboard_status
@@ -26,13 +26,14 @@ async def auth_middleware(request: Request, call_next):
 def get_user_info(request: Request) -> UserInfo:
     print(f"User ID: {request.state.user_id}")
     user_status = check_ldap_user_in_group(request.state.user_id)
-    db.register_user_if_not_exists(request.state.user_id, user_status)
+    user = db.register_user_if_not_exists(request.state.user_id, user_status)
     dashboard_status, dashboard_info = db.get_user_dashboard_status(request.state.user_id)
-    running_dashboard_status = get_live_dashboard_status(request.state.user_id) if dashboard_status == db.DashboardRequestStatus.COMPLETE else None
+    running_dashboard_status = get_live_dashboard_status(request.state.user_id) if dashboard_status == db.RequestStatus.COMPLETE else None
     return UserInfo(
         user_id=request.state.user_id,
-        chtc_account=user_status.chtc_account,
-        ldap_authorized=user_status.spark_account,
+        chtc_account=ChtcAccountStatus(
+            chtc_account=user.chtc_account,
+            spark_account=user.spark_account),
         dashboard_request_status=dashboard_status,
         dashboard_request_info=dashboard_info,
         live_dashboard_status=running_dashboard_status

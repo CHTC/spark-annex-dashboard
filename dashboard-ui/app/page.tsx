@@ -4,7 +4,7 @@ import Image from "next/image";
 import SparkAccount from "./sparkAccount";
 import APForm from "./apForm";
 
-import { DashboardRequest, DashboardRequestStatus, UserInfo } from "@/types/types"
+import { DashboardRequest, RequestStatus, UserInfo } from "@/types/types"
 import useSWR from "swr"
 import APNotice from "./apNotice";
 import { useEffect, useState } from "react";
@@ -36,7 +36,7 @@ export default function Home() {
               Personal Access Point - Getting Started
             </h1>
             <p className="text-md text-gray-600">
-              {currentData && currentData.dashboard_request_status === DashboardRequestStatus.COMPLETE ?
+              {currentData && currentData.dashboard_request_status === RequestStatus.COMPLETE ?
                 <span>
                   Your personal AP has been provisioned by the Infrasturcture Services Team. Check the health of
                   your AP below.
@@ -64,24 +64,24 @@ export default function Home() {
             <APNotice data={currentData} isLoading={isLoading}/>
 
             {currentData && 
-              currentData.chtc_account.spark_account == DashboardRequestStatus.COMPLETE && 
-              currentData.dashboard_request_status !== DashboardRequestStatus.COMPLETE &&
+              currentData.chtc_account.spark_account == RequestStatus.COMPLETE && 
+              currentData.dashboard_request_status !== RequestStatus.COMPLETE &&
               <APForm 
                 data={currentData} 
                 onSubmit={(newData)=>setCurrentData({
                   ...currentData,
-                  dashboard_request_status: DashboardRequestStatus.REQUEST_RECEIVED,
+                  dashboard_request_status: RequestStatus.REQUEST_RECEIVED,
                   dashboard_request_info: newData,
                 })}
                 onCancel={()=>setCurrentData({
                   ...currentData,
-                  dashboard_request_status: DashboardRequestStatus.NOT_REQUESTED,
+                  dashboard_request_status: RequestStatus.NOT_REQUESTED,
                   dashboard_request_info: undefined,
                 })}
               />
             }
 
-            {currentData && currentData.dashboard_request_status === DashboardRequestStatus.COMPLETE &&
+            {currentData && currentData.dashboard_request_status === RequestStatus.COMPLETE &&
               <APStatus data={currentData} />
             }
           </div>

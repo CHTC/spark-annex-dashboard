@@ -1,6 +1,6 @@
 'use client'
 
-import { DashboardRequestStatus, UserInfo } from "@/types/types"
+import { RequestStatus, UserInfo } from "@/types/types"
 
 interface SparkAccountProps {
   error: any;
@@ -8,7 +8,7 @@ interface SparkAccountProps {
   data: UserInfo | undefined;
 }
 
-const {NOT_REQUESTED, REQUEST_RECEIVED, COMPLETE} = DashboardRequestStatus;
+const {NOT_REQUESTED, REQUEST_RECEIVED, COMPLETE} = RequestStatus;
 
 
 /**
@@ -23,11 +23,12 @@ export default function SparkAccount({data, error, isLoading}: SparkAccountProps
         if (error) return <span>Error loading Spark account information.</span>
         if (!data) return <span>No Spark account information available.</span>
         const {chtc_account} = data;
+        console.log(chtc_account)
 
         if (chtc_account.chtc_account == NOT_REQUESTED) {
           return (
             <span>
-              A CHTC user account does not currently exist for netID ({data.user_id}), and is required for 
+              A CHTC user account does not currently exist for your netID ({data.user_id}). A CHTC account is required for 
               accessing resources via the Spark cluster. Please
               {" "}
               <a className="text-blue-600 hover:text-blue-700" href="https://chtc.wisc.edu/uw-research-computing/form.html">request an account</a> 
@@ -52,16 +53,18 @@ export default function SparkAccount({data, error, isLoading}: SparkAccountProps
         else if (chtc_account.chtc_account == COMPLETE && chtc_account.spark_account == NOT_REQUESTED) {
           return (
             <div>
-              <span>
-                A CHTC account exists for netID {data.user_id}, but has not been configured for access to the Spark Slurm cluster. 
-                Please request Spark access using the button below. Once you've requested access, you can expect follow up from
-                CHTC's Infrastructure Services team within 2-3 days.
-              </span>
+              <p className="pb-4">
+                <span>
+                  A CHTC account exists for netID {data.user_id}, but has not been configured for access to the Spark Slurm cluster. 
+                  Please request Spark access using the button below. Once you've requested access, you can expect follow up from
+                  CHTC's Infrastructure Services team within 2-3 days.
+                </span>
+              </p>
               <button
                 type="submit"
                 className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 cursor-pointer"
               >
-                Request Spark Access
+                Request Spark Cluster Access
               </button>
             </div>
             )

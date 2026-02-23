@@ -10,6 +10,13 @@ from datetime import datetime
 class Base(DeclarativeBase):
     pass
 
+class RequestStatus(enum.Enum):
+    NOT_REQUESTED = "Not requested"
+    REQUEST_RECEIVED = "Request received"
+    IN_PROGRESS = "In progress"
+    COMPLETE = "Active"
+    DELETION_REQUESTED = "Deletion Requested"
+    DELETED = "Deleted"
 
 class UserModel(Base):
     __tablename__ = "users"
@@ -17,20 +24,12 @@ class UserModel(Base):
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     netid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
-    chtc_account: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    spark_account: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    chtc_account: Mapped[RequestStatus] = mapped_column(Enum(RequestStatus), nullable=False)
+    spark_account: Mapped[RequestStatus] = mapped_column(Enum(RequestStatus), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     dashboard_requests: Mapped[List["UserDashboardRequestsModel"]] = relationship(back_populates="user")
-
-class DashboardRequestStatus(enum.Enum):
-    NOT_REQUESTED = "Not requested"
-    REQUEST_RECEIVED = "Request received"
-    IN_PROGRESS = "In progress"
-    COMPLETE = "Active"
-    DELETION_REQUESTED = "Deletion Requested"
-    DELETED = "Deleted"
 
 
 class UserDashboardRequestsModel(Base):
@@ -46,7 +45,7 @@ class UserDashboardRequestsModel(Base):
     request_time: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     # Status of the request as noted by the infrastructure services team
-    request_status: Mapped[DashboardRequestStatus] = mapped_column(Enum(DashboardRequestStatus), nullable=False)
+    request_status: Mapped[RequestStatus] = mapped_column(Enum(RequestStatus), nullable=False)
 
     # User-set parameters for dashboard creation
     dashboard_name: Mapped[str] = mapped_column(String, nullable=False)
