@@ -36,6 +36,9 @@ class LiveDashboardStatus(BaseModel):
     dashboard_health: str
     dashboard_health_reason: str
 
+    # Whether the user has submitted a request for help to repair their (unhealthy) dashboard
+    assistance_requested: bool = False
+
 class ChtcAccountStatus(BaseModel):
     chtc_account: RequestStatus
     spark_account: RequestStatus

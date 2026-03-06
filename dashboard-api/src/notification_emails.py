@@ -1,7 +1,7 @@
 import os
 import smtplib
 from email.message import EmailMessage
-from api_models import DashboardRequestInfo
+from api_models import DashboardRequestInfo, LiveDashboardStatus
 
 SEND_EMAILS = os.environ.get('SEND_EMAILS', "True").lower() != "false"
 FROM_ADDRESS = os.environ.get('FROM_ADDRESS')
@@ -10,6 +10,7 @@ TO_ADDRESS = os.environ.get('TO_ADDRESS')
 # Email subjects
 DASHBOARD_REQUEST_SUBJECT = "New AP Dashboard Request from {netid}"
 DASHBOARD_CANCELLATION_SUBJECT = "Cancelled AP Dashboard Request from {netid}"
+DASHBOARD_REPAIR_REQUEST_SUBJECT = "AP Dashboard Repair Request from {netid}"
 CHTC_ACCOUNT_READY_SUBJECT = "Your CHTC Account is Ready"
 SLURM_REQUEST_CONFIRMATION_SUBJECT = "Slurm Cluster Access Request Received"
 SLURM_ACCOUNT_READY_SUBJECT = "Your Slurm Account is Ready"
@@ -20,6 +21,9 @@ AP_HEALTH_DEGRADED_SUBJECT = "Personal Access Point Health Alert"
 AP_REPAIR_COMPLETE_SUBJECT = "Personal Access Point Operational"
 
 # Email content templates
+
+# Admin-facing email texts
+
 DASHBOARD_REQUEST_CONTENT = """
 A new AP dashboard has been requested by user {netid} with the following parameters:
 Job Input Size (GB): {job_input_size}
@@ -31,6 +35,21 @@ Local Universe: {local_universe}
 """
 
 DASHBOARD_CANCELLATION_CONTENT = """User {netid} has cancelled their AP dashboard request."""
+
+
+DASHBOARD_REPAIR_REQUEST_CONTENT = """
+User {netid} has reported a problem with their personal AP. 
+
+The current status of the AP is:
+pod_health: {pod_health}
+pod_health_reason: {pod_health_reason}
+collector_health: {collector_health}
+collector_health_reason: {collector_health_reason}
+dashboard_health: {dashboard_health}
+dashboard_health_reason: {dashboard_health_reason}
+"""
+
+# User-facing email texts
 
 CHTC_ACCOUNT_READY_CONTENT = """
 Hello {netid},
@@ -121,6 +140,15 @@ def send_email(subject, content, to_address = TO_ADDRESS):
     s.quit()
 
 
+
+##############################################################################
+#
+# Admin-Facing emails: Sent by the dashboard to notify admins that they
+# need to take action on behalf of the user
+#
+##############################################################################
+
+
 def send_dashboard_request_notification(netid: str, dashboard_request: DashboardRequestInfo):
     """Send a basic plaintext email notification about a new dashboard request."""
     send_email(
@@ -142,7 +170,27 @@ def send_dashboard_cancellation_notification(netid: str):
         DASHBOARD_CANCELLATION_SUBJECT.format(netid=netid), 
         DASHBOARD_CANCELLATION_CONTENT.format(netid=netid))
 
+def send_ap_repair_requested_notification(netid: str, dashboard_status: LiveDashboardStatus):
+    """ Send an email notification about a user request for help fixing an AP. """
+    send_email(
+        DASHBOARD_REPAIR_REQUEST_SUBJECT.format(netid=netid),
+        DASHBOARD_REPAIR_REQUEST_CONTENT.format(
+            netid=netid,
+            pod_health=dashboard_status.pod_health,
+            pod_health_reason=dashboard_status.pod_health_reason,
+            collector_health=dashboard_status.collector_health,
+            collector_health_reason=dashboard_status.collector_health_reason,
+            dashboard_health=dashboard_status.dashboard_health,
+            dashboard_health_reason=dashboard_status.dashboard_health_reason)
+    )
 
+
+##############################################################################
+#
+# User-Facing emails: Sent by the dashboard to notify users that they
+# need to wait for an admin-initiated action to progress their enrollment
+#
+##############################################################################
 
 def send_chtc_account_provisioned_notification(netid: str):
     """Send email notification that CHTC account has been provisioned."""

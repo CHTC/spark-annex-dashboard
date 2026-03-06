@@ -31,6 +31,8 @@ def get_user_info(request: Request) -> UserInfo:
     
     dashboard_status, dashboard_info = db.get_user_dashboard_status(request.state.user_id)
     running_dashboard_status = get_live_dashboard_status(request.state.user_id) if dashboard_status == db.RequestStatus.COMPLETE else None
+    if running_dashboard_status and user.assistance_requested:
+        running_dashboard_status.assistance_requested = True
     
     return UserInfo(
         user_id=request.state.user_id,
@@ -59,4 +61,6 @@ def delete_ap_dashboard_request(request: Request) -> dict[str, str]:
 @app.post("/ap-repair-request")
 def submit_ap_dashboard_request(request: Request) -> dict[str, str]:
     db.mark_user_assistance_requested(request.state.user_id)
+    current_status = get_live_dashboard_status(request.state.user_id)
+    ne.send_ap_repair_requested_notification(request.state.user_id, current_status)
     return {"result":"ok"}
