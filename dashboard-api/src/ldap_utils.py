@@ -1,4 +1,10 @@
+"""
+Utility functions for interacting with the LDAP directory. Used to check
+if a user is registered with a CHTC account, and if they are marked for
+Slurm login access.
+"""
 from dataclasses import dataclass
+from db_models import RequestStatus
 from os import environ
 from sys import argv
 from datetime import datetime
@@ -21,8 +27,8 @@ tls_configuration = Tls(ca_certs_file=LDAP_CERT) if LDAP_CERT else None
 class UserLDAPStatus:
     """Dataclass to represent the LDAP status of a user."""
 
-    chtc_account: bool
-    spark_account: bool
+    chtc_account: RequestStatus
+    spark_account: RequestStatus
     modify_timestamp: datetime | None = None
 
 
@@ -52,9 +58,9 @@ def check_ldap_user_in_group(
     if len(exists_response) > 0 and "modifyTimestamp" in exists_response[0]["attributes"]:
         modify_timestamp = exists_response[0]["attributes"]["modifyTimestamp"]
     return UserLDAPStatus(
-        chtc_account=len(exists_response) > 0,
-        spark_account=len(group_response) > 0,
-        modify_timestamp=modify_timestamp,
+        chtc_account = RequestStatus.COMPLETE if len(exists_response) > 0 else RequestStatus.NOT_REQUESTED,
+        spark_account = RequestStatus.COMPLETE if len(group_response) > 0 else RequestStatus.NOT_REQUESTED,
+        modify_timestamp = modify_timestamp,
     )
 
 if __name__ == "__main__":

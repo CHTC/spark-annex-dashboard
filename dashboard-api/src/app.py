@@ -2,11 +2,13 @@ from typing import Union
 
 from fastapi import FastAPI, HTTPException, Request, Depends
 from auth_handler import verify_auth_headers
-from ldap_utils import check_ldap_user_in_group
+from ldap_utils import UserLDAPStatus, check_ldap_user_in_group
 from api_models import UserInfo, DashboardRequestInfo, ChtcAccountStatus
 import db
+from db_models import RequestStatus
 import notification_emails as ne
 from ap_status import get_live_dashboard_status
+from rt_utils import check_user_account_request_exists
 import re
 
 app = FastAPI()
@@ -26,14 +28,32 @@ async def auth_middleware(request: Request, call_next):
 def get_user_info(request: Request) -> UserInfo:
     print(f"User ID: {request.state.user_id}")
 
-    user_status = check_ldap_user_in_group(request.state.user_id)
-    user = db.register_user_if_not_exists(request.state.user_id, user_status)
+    # First, check the last-observed state of the user in the local DB
+    user = db.get_or_update_user(request.state.user_id)
     
+    # If the user is not fully registered yet, check LDAP to see if their account is fully registered
+    if user.chtc_account != RequestStatus.COMPLETE or user.spark_account != RequestStatus.COMPLETE:
+        user_status = check_ldap_user_in_group(request.state.user_id)
+    
+        # If the user has not yet started registering, also check the RT queue to see if they've sent an account request
+        if (user_status.chtc_account == RequestStatus.NOT_REQUESTED and 
+                check_user_account_request_exists(request.state.user_id)):
+            user_status.chtc_account = RequestStatus.REQUEST_RECEIVED
+        
+        # Update the user's state in the local DB
+        if user_status.chtc_account != user.chtc_account or user_status.spark_account != user.spark_account:
+            user = db.get_or_update_user(request.state.user_id, user_status)
+    
+    # Then, check if the user is far along enough in the enrollment process to have requested
+    # a dashboard
     dashboard_status, dashboard_info = db.get_user_dashboard_status(request.state.user_id)
-    running_dashboard_status = get_live_dashboard_status(request.state.user_id) if dashboard_status == db.RequestStatus.COMPLETE else None
+    
+    # If so, query the k8s API for the running dashboard's status
+    running_dashboard_status = get_live_dashboard_status(request.state.user_id) if dashboard_status == RequestStatus.COMPLETE else None
     if running_dashboard_status and user.assistance_requested:
         running_dashboard_status.assistance_requested = True
     
+    # Return all known information about the user's state for display on the frontend
     return UserInfo(
         user_id=request.state.user_id,
         chtc_account=ChtcAccountStatus(
@@ -59,7 +79,7 @@ def delete_ap_dashboard_request(request: Request) -> dict[str, str]:
 
 
 @app.post("/ap-repair-request")
-def submit_ap_dashboard_request(request: Request) -> dict[str, str]:
+def submit_ap_repair_request(request: Request) -> dict[str, str]:
     db.mark_user_assistance_requested(request.state.user_id)
     current_status = get_live_dashboard_status(request.state.user_id)
     ne.send_ap_repair_requested_notification(request.state.user_id, current_status)

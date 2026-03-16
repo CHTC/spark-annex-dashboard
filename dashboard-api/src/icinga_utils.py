@@ -1,3 +1,8 @@
+"""
+Utility functions for interacting with the Icinga monitoring system.
+Used to determine the last user account update time on the Slurm cluster login node.
+"""
+
 import requests
 import os
 import re
