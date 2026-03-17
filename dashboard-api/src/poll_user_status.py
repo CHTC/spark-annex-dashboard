@@ -10,6 +10,7 @@ from ldap_utils import check_ldap_user_in_group
 from notification_emails import send_chtc_account_provisioned_notification, send_slurm_account_provisioned_notification
 from icinga_utils import check_icinga_puppet_update_time
 from datetime import timedelta
+from db_models import RequestStatus
 import pytz
 
 app = Celery()
@@ -34,15 +35,19 @@ def poll_user_ldap_status():
     users = db.get_not_fully_registered_users()
     for user in users:
         ldap_status = check_ldap_user_in_group(user.netid)
-        if ldap_status.chtc_account != user.chtc_account or ldap_status.spark_account != user.spark_account:
+        if (
+            (ldap_status.chtc_account == RequestStatus.COMPLETE and user.chtc_account != RequestStatus.COMPLETE)
+            or 
+            (ldap_status.spark_account == RequestStatus.COMPLETE and user.spark_account != RequestStatus.COMPLETE)
+        ):
             if ldap_status.modify_timestamp and last_puppet_run_utc - ldap_status.modify_timestamp < PUPPET_WAIT_TIME:
                 print(f"User {user.netid} has LDAP modification more recent than last puppet run. Skipping.")
                 continue
 
             db.update_user_chtc_account_status_from_ldap(user.netid, ldap_status)
-            if ldap_status.chtc_account and ldap_status.spark_account:
+            if ldap_status.chtc_account == RequestStatus.COMPLETE and ldap_status.spark_account == RequestStatus.COMPLETE:
                 print(f"User {user.netid} has newly-detected LDAP access. Notifying.")
                 send_slurm_account_provisioned_notification(user.netid)
-            elif ldap_status.chtc_account:
+            elif ldap_status.chtc_account == RequestStatus.COMPLETE:
                 print(f"User {user.netid} has newly detected CHTC access, but not LDAP access. Notifying")
                 send_chtc_account_provisioned_notification(user.netid)

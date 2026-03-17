@@ -16,7 +16,7 @@ engine = create_engine(db_path)
 
 dm.Base.metadata.create_all(engine)
 
-DbSession = sessionmaker(bind=engine)
+DbSession = sessionmaker(bind=engine, expire_on_commit=False)
 
 
 def get_or_update_user(netid: str, user_status: UserLDAPStatus | None = None):
@@ -29,11 +29,13 @@ def get_or_update_user(netid: str, user_status: UserLDAPStatus | None = None):
             user.chtc_account = dm.RequestStatus.NOT_REQUESTED
             user.spark_account = dm.RequestStatus.NOT_REQUESTED
             user.assistance_requested = False
+            session.add(user)
+            session.commit()
         elif user_status:
             user.chtc_account = user_status.chtc_account
             user.spark_account = user_status.spark_account
-        session.add(user)
-        session.commit()
+            session.add(user)
+            session.commit()
         return user
 
 def get_user_dashboard_status(netid: str) -> tuple[dm.RequestStatus, DashboardRequestInfo | None]:

@@ -28,11 +28,13 @@ async def auth_middleware(request: Request, call_next):
 def get_user_info(request: Request) -> UserInfo:
     print(f"User ID: {request.state.user_id}")
 
+    print("Getting user info")
     # First, check the last-observed state of the user in the local DB
     user = db.get_or_update_user(request.state.user_id)
     
     # If the user is not fully registered yet, check LDAP to see if their account is fully registered
     if user.chtc_account != RequestStatus.COMPLETE or user.spark_account != RequestStatus.COMPLETE:
+        print(f"User state is chtc: {user.chtc_account} spark: {user.spark_account}. Checking LDAP for updates")
         user_status = check_ldap_user_in_group(request.state.user_id)
     
         # If the user has not yet started registering, also check the RT queue to see if they've sent an account request
@@ -44,10 +46,12 @@ def get_user_info(request: Request) -> UserInfo:
         if user_status.chtc_account != user.chtc_account or user_status.spark_account != user.spark_account:
             user = db.get_or_update_user(request.state.user_id, user_status)
     
+    print("Checking for pending dashboard requests from user.")
     # Then, check if the user is far along enough in the enrollment process to have requested
     # a dashboard
     dashboard_status, dashboard_info = db.get_user_dashboard_status(request.state.user_id)
     
+    print("Checking live dashboard status.")
     # If so, query the k8s API for the running dashboard's status
     running_dashboard_status = get_live_dashboard_status(request.state.user_id) if dashboard_status == RequestStatus.COMPLETE else None
     if running_dashboard_status and user.assistance_requested:
