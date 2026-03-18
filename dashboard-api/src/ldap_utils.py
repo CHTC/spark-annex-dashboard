@@ -18,7 +18,7 @@ LDAP_GROUP = environ.get(
     "LDAP_GROUP", "cn=hpclogin1.chtc.wisc.edu,ou=user_tags,dc=chtc,dc=wisc,dc=edu"
 )
 
-LDAP_AUTHTOK = environ["LDAP_AUTHTOK"]  # Required
+LDAP_AUTHTOK = environ.get("LDAP_AUTHTOK", "")  # Required
 
 tls_configuration = Tls(ca_certs_file=LDAP_CERT) if LDAP_CERT else None
 

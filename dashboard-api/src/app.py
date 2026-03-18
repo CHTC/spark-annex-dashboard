@@ -28,7 +28,7 @@ def get_user_info(request: Request) -> UserInfo:
 
     print("Getting user info")
     # First, check the last-observed state of the user in the local DB
-    user = db.get_or_update_user(request.state.user_id)
+    user = db.get_or_register_user(request.state.user_id)
     
     # If the user is not fully registered yet, check LDAP to see if their account is fully registered
     if user.chtc_account != RequestStatus.COMPLETE or user.spark_account != RequestStatus.COMPLETE:
@@ -43,7 +43,7 @@ def get_user_info(request: Request) -> UserInfo:
         
         # Update the user's state in the local DB
         if user_status.chtc_account != user.chtc_account or user_status.spark_account != user.spark_account:
-            user = db.get_or_update_user(request.state.user_id, user_status)
+            user = db.update_user(request.state.user_id, user_status)
     
     print("Checking for pending dashboard requests from user.")
     # Then, check if the user is far along enough in the enrollment process to have requested
