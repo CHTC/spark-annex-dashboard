@@ -3,7 +3,7 @@
 import { DashboardRequest, RequestStatus, UserInfo } from '@/types/types';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
-import { getAPIUrl } from './util';
+import { submitAPRequest, submitAPDeleteRequest } from './api';
 
 interface APFormProps {
   data: UserInfo;
@@ -14,27 +14,6 @@ interface APFormProps {
 const textInputClass = "w-full px-4 py-2 border border-gray-300 rounded-md disabled:bg-gray-100 disabled:text-gray-500"
 const checkboxClass = "w-5 h-5 text-blue-600 rounded border-gray-300 cursor-pointer disabled:cursor-default"
 
-
-const submitAPRequest = async (formData: DashboardRequest) => {
-  var response = await fetch(`${getAPIUrl()}ap-request`, {
-    method: 'POST',
-    body: JSON.stringify(formData),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  return response;
-}
-
-const submitAPDeleteRequest = async () => {
-  var response = await fetch(`${getAPIUrl()}ap-request`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  return response;
-}
 
 export default function APForm({data, onSubmit, onCancel}: APFormProps) {
   const [formData, setFormData] = useState<DashboardRequest>({

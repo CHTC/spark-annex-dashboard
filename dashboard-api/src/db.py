@@ -1,8 +1,6 @@
-from sqlalchemy import create_engine, select, delete
-from sqlalchemy.orm import sessionmaker, Session, joinedload
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import sessionmaker
 from os import environ
-from typing import Optional
-import urllib.parse
 import db_models as dm
 from api_models import DashboardRequestInfo
 from ldap_utils import UserLDAPStatus
@@ -33,7 +31,7 @@ def get_or_update_user(netid: str, user_status: UserLDAPStatus | None = None):
             session.commit()
         elif user_status:
             user.chtc_account = user_status.chtc_account
-            user.spark_account = user_status.spark_account
+            user.spark_account = user_status.spark_account 
             session.add(user)
             session.commit()
         return user
@@ -109,8 +107,18 @@ def update_user_chtc_account_status_from_ldap(netid: str, account_status: UserLD
         user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
         if user is None:
             return
-        user.chtc_account = dm.RequestStatus.COMPLETE if account_status.chtc_account else user.chtc_account
-        user.spark_account = dm.RequestStatus.COMPLETE if account_status.spark_account else user.spark_account
+        user.chtc_account = dm.RequestStatus.COMPLETE if account_status.chtc_account == dm.RequestStatus.COMPLETE else user.chtc_account
+        user.spark_account = dm.RequestStatus.COMPLETE if account_status.spark_account == dm.RequestStatus.COMPLETE else user.spark_account
+        session.add(user)
+        session.commit()
+
+
+def request_slurm_account(netid: str):
+    with DbSession() as session:
+        user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
+        if user is None:
+            raise HTTPException(400, "User not registered")
+        user.spark_account = dm.RequestStatus.REQUEST_RECEIVED
         session.add(user)
         session.commit()
 

@@ -1,7 +1,7 @@
 import { DashboardHealth, DashboardRequest, UserInfo } from "@/types/types"
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { getAPIUrl } from "./util"
 import { useState } from "react"
+import { submitAPRepairRequest } from "./api"
 
 type APStatusProps = {
   data: UserInfo  
@@ -12,16 +12,6 @@ const HealthColors: Record<DashboardHealth, string> = {
   "Healthy": "text-emerald-500",
   "Poor": "text-red-500",
   "Unknown": "text-gray-500"
-}
-
-const submitAPRepairRequest = async () => {
-  var response = await fetch(`${getAPIUrl()}ap-repair-request`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  return response;
 }
 
 export default function APStatus({data, onSubmit}: APStatusProps) {

@@ -55,7 +55,17 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-gray-900 mb-2">
               Spark Cluster Access
             </h2>
-            <SparkAccount data={currentData} error={error} isLoading={isLoading}/>
+            <SparkAccount
+              data={currentData}
+              error={error}
+              isLoading={isLoading}
+              onSubmit={() => currentData && setCurrentData({
+                ...currentData,
+                chtc_account: {
+                  ...currentData.chtc_account,
+                  spark_account: RequestStatus.REQUEST_RECEIVED
+                }
+              })} />
           </div>
           <div className="max-w-2xl mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">

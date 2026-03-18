@@ -11,6 +11,7 @@ TO_ADDRESS = os.environ.get('TO_ADDRESS')
 DASHBOARD_REQUEST_SUBJECT = "New AP Dashboard Request from {netid}"
 DASHBOARD_CANCELLATION_SUBJECT = "Cancelled AP Dashboard Request from {netid}"
 DASHBOARD_REPAIR_REQUEST_SUBJECT = "AP Dashboard Repair Request from {netid}"
+SLURM_ACCOUNT_REQUEST_SUBJECT = "Slurm Cluster Access Request from {netid}"
 CHTC_ACCOUNT_READY_SUBJECT = "Your CHTC Account is Ready"
 SLURM_REQUEST_CONFIRMATION_SUBJECT = "Slurm Cluster Access Request Received"
 SLURM_ACCOUNT_READY_SUBJECT = "Your Slurm Account is Ready"
@@ -49,6 +50,10 @@ dashboard_health: {dashboard_health}
 dashboard_health_reason: {dashboard_health_reason}
 """
 
+
+SLURM_ACCOUNT_REQUEST_CONTENT = """
+User {netid} has requested access to the Spark Slurm cluster for the purpose of running a Personal AP annex.
+"""
 # User-facing email texts
 
 CHTC_ACCOUNT_READY_CONTENT = """
@@ -182,6 +187,13 @@ def send_ap_repair_requested_notification(netid: str, dashboard_status: LiveDash
             collector_health_reason=dashboard_status.collector_health_reason,
             dashboard_health=dashboard_status.dashboard_health,
             dashboard_health_reason=dashboard_status.dashboard_health_reason)
+    )
+    
+def send_slurm_account_requested_notification(netid: str):
+    """Send email notification that a user has requested access to the Spark Slurm cluster."""
+    send_email(
+        SLURM_ACCOUNT_REQUEST_SUBJECT.format(netid=netid),
+        SLURM_ACCOUNT_REQUEST_CONTENT.format(netid=netid)
     )
 
 

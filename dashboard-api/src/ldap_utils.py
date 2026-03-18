@@ -62,6 +62,15 @@ def check_ldap_user_in_group(
         spark_account = RequestStatus.COMPLETE if len(group_response) > 0 else RequestStatus.NOT_REQUESTED,
         modify_timestamp = modify_timestamp,
     )
+    
+    
+def update_user_state_from_ldap(user_name: str, current_status: UserLDAPStatus) -> UserLDAPStatus:
+    ldap_status = check_ldap_user_in_group(user_name)
+    return UserLDAPStatus(
+        chtc_account = ldap_status.chtc_account if ldap_status.chtc_account > current_status.chtc_account else current_status.chtc_account,
+        spark_account = ldap_status.spark_account if ldap_status.spark_account > current_status.spark_account else current_status.spark_account,
+        modify_timestamp = ldap_status.modify_timestamp if ldap_status.modify_timestamp else current_status.modify_timestamp,
+    )
 
 if __name__ == "__main__":
     users = check_ldap_user_in_group(

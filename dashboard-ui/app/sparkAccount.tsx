@@ -1,11 +1,15 @@
 'use client'
 
 import { RequestStatus, UserInfo } from "@/types/types"
+import { ArrowPathIcon } from '@heroicons/react/24/solid'
+import { useState } from "react"
+import { submitSlurmRequest } from "./api"
 
 interface SparkAccountProps {
   error: any;
   isLoading: boolean;
   data: UserInfo | undefined;
+  onSubmit: Function;
 }
 
 const {NOT_REQUESTED, REQUEST_RECEIVED, COMPLETE} = RequestStatus;
@@ -15,7 +19,26 @@ const {NOT_REQUESTED, REQUEST_RECEIVED, COMPLETE} = RequestStatus;
  * Widget to display a user's Spark account information
  * based on a query to the dashboard API.
  */
-export default function SparkAccount({data, error, isLoading}: SparkAccountProps) {
+export default function SparkAccount({data, error, isLoading, onSubmit}: SparkAccountProps) {
+  const [sendingForm, setSendingForm] = useState({
+    sending: false,
+    error: "",
+  });
+
+  const submitSlurmAccountRequest = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log('Slurm account request submitted.');
+
+    setSendingForm({sending: true, error: ""});
+    var response = await submitSlurmRequest();
+    if (!response.ok) {
+      setSendingForm({sending: false, error: `Error submitting form: ${response.statusText}`});
+    } else {
+      setSendingForm({sending: false, error: ""});
+      onSubmit();
+    }
+  };
+
   return  (
     <p className="text-md text-gray-600">
       {(()=>{
@@ -60,12 +83,23 @@ export default function SparkAccount({data, error, isLoading}: SparkAccountProps
                   CHTC's Infrastructure Services team within 2-3 days.
                 </span>
               </p>
-              <button
-                type="submit"
-                className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 cursor-pointer"
-              >
-                Request Spark Cluster Access
-              </button>
+              {sendingForm.sending ?
+                <button
+                  type="button"
+                  className="px-6 py-2 bg-none text-blue-600 rounded-md"
+                >
+                  <ArrowPathIcon className='size-6 animate-spin'/>
+                </button>
+                :
+                <button
+                  type="button"
+                  className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 cursor-pointer"
+                  onClick={submitSlurmAccountRequest}
+                >
+                  Request Spark Cluster Access
+                </button>
+              }
+              {sendingForm.error && <p className="text-red-500 text-sm mt-2">{sendingForm.error}</p>}
             </div>
             )
         }

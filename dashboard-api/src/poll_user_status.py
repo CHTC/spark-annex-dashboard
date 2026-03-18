@@ -11,11 +11,12 @@ from notification_emails import send_chtc_account_provisioned_notification, send
 from icinga_utils import check_icinga_puppet_update_time
 from datetime import timedelta
 from db_models import RequestStatus
+from os import environ
 import pytz
 
 app = Celery()
 
-PUPPET_WAIT_TIME = timedelta(hours=2)
+PUPPET_WAIT_TIME = timedelta(hours=int(environ.get('PUPPET_WAIT_HOURS', 2)))
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender: Celery, **kwargs):

@@ -1,15 +1,17 @@
 import enum
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Enum, Integer, UniqueConstraint
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, Enum, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship, Mapped
 from typing import List
 from uuid import uuid4
+from functools import total_ordering
 from datetime import datetime
 
 class Base(DeclarativeBase):
     pass
 
+@total_ordering
 class RequestStatus(enum.Enum):
     NOT_REQUESTED = "Not requested"
     REQUEST_RECEIVED = "Request received"
@@ -17,6 +19,16 @@ class RequestStatus(enum.Enum):
     COMPLETE = "Active"
     DELETION_REQUESTED = "Deletion Requested"
     DELETED = "Deleted"
+    
+    @classmethod
+    def __ORDER(cls):
+        return [cls.NOT_REQUESTED, cls.REQUEST_RECEIVED, cls.IN_PROGRESS, cls.COMPLETE, cls.DELETION_REQUESTED, cls.DELETED]
+    
+    def __lt__(self, other):
+        order = RequestStatus.__ORDER()
+        return order.index(self) < order.index(other)
+    
+    
 
 class UserModel(Base):
     __tablename__ = "users"
