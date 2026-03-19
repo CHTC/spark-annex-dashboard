@@ -6,7 +6,7 @@ from .api_models import LiveDashboardStatus
 
 
 POD_NAMESPACE = environ.get("DASHBOARD_NAMESPACE", "default")
-K8S_CONFIG_SOURCE = environ.get("K8S_CONFIG_SOURCE", "IN_CLUSTER")
+K8S_CONFIG_SOURCE = environ.get("K8S_CONFIG_SOURCE", "")
 
 LABEL_PATTERN = "app={netid}-personal-ap"
 

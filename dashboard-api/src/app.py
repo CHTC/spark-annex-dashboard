@@ -15,9 +15,9 @@ app = FastAPI()
 async def auth_middleware(request: Request, call_next):
     auth_info = verify_auth_headers(request, request.app)
     if auth_info is None:
-        return HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail="Unauthorized")
     elif "eppn" not in auth_info:
-        return HTTPException(status_code=500, detail="Missing claims in token")
+        raise HTTPException(status_code=500, detail="Missing claims in token")
     request.state.user_id = re.sub(r'@.*','', auth_info["eppn"])
     response = await call_next(request)
     return response
