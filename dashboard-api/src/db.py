@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from os import environ
-import db_models as dm
-from api_models import DashboardRequestInfo
-from ldap_utils import UserLDAPStatus
+from . import db_models as dm
+from .api_models import DashboardRequestInfo
+from .ldap_utils import UserLDAPStatus
 
 from fastapi import HTTPException
 

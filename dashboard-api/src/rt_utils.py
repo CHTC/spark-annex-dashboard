@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta
-from rt_api_helper import RtApiHelper
+
+from .rt_api_helper import RtApiHelper
 
 RT_BASE_URL = os.environ.get("RT_BASE_URL", "https://crt.cs.wisc.edu/rt/REST/1.0/")
 RT_USERNAME = os.environ.get("RT_USER", "")

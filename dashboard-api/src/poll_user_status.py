@@ -3,16 +3,17 @@ Util script to poll the LDAP status of users in the database and sync changes to
 Also, send notification emails to users when their account status updates.
 """
 
-import db
 from celery import Celery
 from celery.schedules import crontab
-from ldap_utils import check_ldap_user_in_group
-from notification_emails import send_chtc_account_provisioned_notification, send_slurm_account_provisioned_notification
-from icinga_utils import check_icinga_puppet_update_time
 from datetime import timedelta
-from db_models import RequestStatus
 from os import environ
 import pytz
+
+from . import db
+from .ldap_utils import check_ldap_user_in_group
+from .notification_emails import send_chtc_account_provisioned_notification, send_slurm_account_provisioned_notification
+from .icinga_utils import check_icinga_puppet_update_time
+from .db_models import RequestStatus
 
 app = Celery()
 

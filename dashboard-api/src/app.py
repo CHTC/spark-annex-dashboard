@@ -1,13 +1,13 @@
 from fastapi import FastAPI, HTTPException, Request
-from auth_handler import verify_auth_headers
-from ldap_utils import update_user_state_from_ldap, UserLDAPStatus
-from api_models import UserInfo, DashboardRequestInfo, ChtcAccountStatus
-import db
-from db_models import RequestStatus
-import notification_emails as ne
-from ap_status import get_live_dashboard_status
-from rt_utils import check_user_account_request_exists
 import re
+from .auth_handler import verify_auth_headers
+from .ldap_utils import update_user_state_from_ldap, UserLDAPStatus
+from .api_models import UserInfo, DashboardRequestInfo, ChtcAccountStatus
+from . import db as db
+from .db_models import RequestStatus
+from . import notification_emails as ne
+from .ap_status import get_live_dashboard_status
+from .rt_utils import check_user_account_request_exists
 
 app = FastAPI()
 

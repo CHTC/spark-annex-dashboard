@@ -1,8 +1,8 @@
 from os import environ
 from kubernetes import config, client
 import htcondor2 as htcondor
-from api_models import LiveDashboardStatus
 import requests
+from .api_models import LiveDashboardStatus
 
 
 POD_NAMESPACE = environ.get("DASHBOARD_NAMESPACE", "default")
@@ -137,5 +137,3 @@ def get_live_dashboard_status(netid: str) -> LiveDashboardStatus:
         dashboard_health=check.dashboard_health,
         dashboard_health_reason=check.dashboard_health_reason,
     )
-
-

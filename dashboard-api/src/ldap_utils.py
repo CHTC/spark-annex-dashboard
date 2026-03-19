@@ -4,12 +4,12 @@ if a user is registered with a CHTC account, and if they are marked for
 Slurm login access.
 """
 from dataclasses import dataclass
-from db_models import RequestStatus
 from os import environ
 from sys import argv
 from datetime import datetime
-
 from ldap3 import ALL, SAFE_SYNC, Connection, Server, Tls
+
+from .db_models import RequestStatus
 
 LDAP_SERVER = environ.get("LDAP_SERVER", "ldaps://ldap-replica1.chtcdev.chtc.io")
 LDAP_CERT = environ.get("LDAP_CERT", "/etc/pki/tls/certs/tiger_dev_ca.crt")

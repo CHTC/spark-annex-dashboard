@@ -1,7 +1,8 @@
 import os
 import smtplib
 from email.message import EmailMessage
-from api_models import DashboardRequestInfo, LiveDashboardStatus
+
+from .api_models import DashboardRequestInfo, LiveDashboardStatus
 
 SEND_EMAILS = os.environ.get('SEND_EMAILS', "True").lower() != "false"
 FROM_ADDRESS = os.environ.get('FROM_ADDRESS')

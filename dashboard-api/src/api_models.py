@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from db_models import RequestStatus, UserDashboardRequestsModel
+from .db_models import RequestStatus, UserDashboardRequestsModel
 
 class DashboardRequestInfo(BaseModel):
     job_input_size: int
