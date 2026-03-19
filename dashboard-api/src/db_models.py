@@ -21,11 +21,11 @@ class RequestStatus(enum.Enum):
     DELETED = "Deleted"
     
     @classmethod
-    def __ORDER(cls):
+    def ORDER(cls):
         return [cls.NOT_REQUESTED, cls.REQUEST_RECEIVED, cls.IN_PROGRESS, cls.COMPLETE, cls.DELETION_REQUESTED, cls.DELETED]
     
     def __lt__(self, other):
-        order = RequestStatus.__ORDER()
+        order = RequestStatus.ORDER()
         return order.index(self) < order.index(other)
     
     

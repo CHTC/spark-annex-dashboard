@@ -6,6 +6,7 @@ from .api_models import LiveDashboardStatus
 
 
 POD_NAMESPACE = environ.get("DASHBOARD_NAMESPACE", "default")
+K8S_CONFIG_SOURCE = environ.get("K8S_CONFIG_SOURCE", "IN_CLUSTER")
 
 LABEL_PATTERN = "app={netid}-personal-ap"
 
@@ -14,7 +15,9 @@ COLLECTOR_PATTERN = "{netid}-personal-ap.{namespace}.svc.cluster.local:{port}?so
 DASHBOARD_PATTERN = "http://{netid}-personal-ap.{namespace}.svc.cluster.local:{port}/dashboards/{netid}/"
 
 
-config.load_incluster_config()
+
+if K8S_CONFIG_SOURCE == "IN_CLUSTER":
+    config.load_incluster_config()
 v1 = client.CoreV1Api()
 
 class DashboardStatusCheck():

@@ -12,3 +12,4 @@ celery
 pytz
 pytest
 httpx
+dotenv

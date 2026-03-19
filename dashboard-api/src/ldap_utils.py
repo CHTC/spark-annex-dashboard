@@ -22,7 +22,6 @@ LDAP_AUTHTOK = environ.get("LDAP_AUTHTOK", "")  # Required
 
 tls_configuration = Tls(ca_certs_file=LDAP_CERT) if LDAP_CERT else None
 
-
 @dataclass
 class UserLDAPStatus:
     """Dataclass to represent the LDAP status of a user."""

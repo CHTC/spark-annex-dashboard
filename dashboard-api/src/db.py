@@ -7,7 +7,7 @@ from .ldap_utils import UserLDAPStatus
 
 from fastapi import HTTPException
 
-db_path = environ.get("DASHBOARD_DB_PATH", "sqlite:///tmp/dashboard.db")
+db_path = environ.get("DASHBOARD_DB_PATH", "sqlite:////tmp/dashboard.db")
 
 
 engine = create_engine(db_path)
