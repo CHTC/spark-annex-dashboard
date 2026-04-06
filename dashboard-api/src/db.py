@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from os import environ
 from . import db_models as dm
 from .api_models import DashboardRequestInfo
-from .ldap_utils import UserLDAPStatus
+from .userapp_utils import UserAppUserStatus
 
 from fastapi import HTTPException
 
@@ -33,7 +33,7 @@ def get_or_register_user(netid: str):
             session.commit()
         return user
         
-def update_user(netid: str, user_status: UserLDAPStatus ):
+def update_user(netid: str, user_status: UserAppUserStatus ):
     """ Given a user ID, update the user's entry in the database. """
     with DbSession() as session:
         user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
@@ -113,7 +113,7 @@ def get_not_fully_registered_users() -> list[dm.UserModel]:
         ).all()
         return list(users)
 
-def update_user_chtc_account_status_from_ldap(netid: str, account_status: UserLDAPStatus):
+def update_user_chtc_account_status_from_ldap(netid: str, account_status: UserAppUserStatus):
     with DbSession() as session:
         user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
         if user is None:

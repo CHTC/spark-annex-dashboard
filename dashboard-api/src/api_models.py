@@ -42,6 +42,7 @@ class LiveDashboardStatus(BaseModel):
 class ChtcAccountStatus(BaseModel):
     chtc_account: RequestStatus
     spark_account: RequestStatus
+
 class UserInfo(BaseModel):
     user_id: str
     chtc_account: ChtcAccountStatus
