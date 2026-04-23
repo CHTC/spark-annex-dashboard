@@ -8,7 +8,6 @@ from . import db as db
 from .db_models import RequestStatus
 from . import notification_emails as ne
 from .ap_status import get_live_dashboard_status
-from .rt_utils import check_user_account_request_exists
 from .poll_user_status import start as start_scheduler, stop as stop_scheduler
 
 
