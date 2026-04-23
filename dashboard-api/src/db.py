@@ -49,6 +49,8 @@ def get_user_dashboard_status(netid: str) -> tuple[dm.RequestStatus, DashboardRe
     """ Given a user ID, return the status of that user's dashboard request."""
     with DbSession() as session:
         user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
+        if user is None:
+            raise HTTPException(400, f"User {netid} not registered")
         active_request = session.scalar(select(dm.UserDashboardRequestsModel)
             .where(dm.UserDashboardRequestsModel.user_id == user.id)
             .where(dm.UserDashboardRequestsModel.request_status != dm.RequestStatus.DELETED)
