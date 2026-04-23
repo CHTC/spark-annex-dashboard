@@ -45,9 +45,4 @@ spec:
         - name: TO_ADDRESS
           value: westphall@wisc.edu
         - name: SMTP_HOST
-          value: smtp.wiscmail.wisc.edu 
-      # Connection broker for scheduled jobs
-      - name: rabbitmq
-        image: rabbitmq
-        ports:
-        - containerPort: 5672
+          value: smtp.wiscmail.wisc.edu

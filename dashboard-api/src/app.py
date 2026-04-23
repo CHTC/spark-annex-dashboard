@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 import re
 from .auth_handler import verify_auth_headers
@@ -8,8 +9,17 @@ from .db_models import RequestStatus
 from . import notification_emails as ne
 from .ap_status import get_live_dashboard_status
 from .rt_utils import check_user_account_request_exists
+from .poll_user_status import start as start_scheduler, stop as stop_scheduler
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_scheduler()
+    yield
+    stop_scheduler()
+
+
+app = FastAPI(lifespan=lifespan)
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
@@ -34,12 +44,7 @@ def get_user_info(request: Request) -> UserInfo:
     if user.chtc_account != RequestStatus.COMPLETE or user.spark_account != RequestStatus.COMPLETE:
         print(f"User state is chtc: {user.chtc_account} spark: {user.spark_account}. Checking LDAP for updates")
         # Check LDAP to see if either phase of account registration has progressed from the state in the local DB
-        user_status = update_user_state_from_userapp(request.state.user_id, UserAppUserStatus(chtc_account=user.chtc_account, spark_account=user.spark_account))
-    
-        # If the user has not yet started registering, also check the RT queue to see if they've sent an account request
-        if (user_status.chtc_account == RequestStatus.NOT_REQUESTED and 
-                check_user_account_request_exists(request.state.user_id)):
-            user_status.chtc_account = RequestStatus.REQUEST_RECEIVED
+        user_status = update_user_state_from_userapp(request.state.user_id, UserAppUserStatus(user.chtc_account, user.spark_account))
         
         # Update the user's state in the local DB
         if user_status.chtc_account != user.chtc_account or user_status.spark_account != user.spark_account:

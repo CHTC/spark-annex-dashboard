@@ -8,7 +8,7 @@ cryptography
 sqlalchemy
 kubernetes
 htcondor
-celery
 pytz
 httpx
 dotenv
+APScheduler
