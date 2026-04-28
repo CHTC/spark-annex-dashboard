@@ -54,9 +54,10 @@ export default function SparkAccount({data, error, isLoading, onSubmit}: SparkAc
               A CHTC user account does not currently exist for your netID ({data.user_id}). A CHTC account is required for 
               accessing resources via the Spark cluster. Please
               {" "}
-              <a className="text-blue-600 hover:text-blue-700" href="https://chtc.wisc.edu/uw-research-computing/form.html">request an account</a> 
+              <a className="text-blue-600 hover:text-blue-700" href="https://userapp.chtcdev.chtc.io/forms/user-applications/create/">request an account</a> 
               {" "}
-              from CHTC to get started.
+              from CHTC to get started. Please select "High Performance Computing (HPC)" when asked which system best fits your computing needs,
+              as the Personal AP's worker nodes run within CHTC's HPC cluster.
             </span>
           )
         }

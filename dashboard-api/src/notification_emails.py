@@ -1,12 +1,14 @@
 import os
 import smtplib
 from email.message import EmailMessage
+from uuid import RESERVED_FUTURE
 
 from .api_models import DashboardRequestInfo, LiveDashboardStatus
 
 SEND_EMAILS = os.environ.get('SEND_EMAILS', "True").lower() != "false"
 FROM_ADDRESS = os.environ.get('FROM_ADDRESS')
 TO_ADDRESS = os.environ.get('TO_ADDRESS')
+RETURN_LINK = os.environ.get('RETURN_LINK', "https://personal-ap-dashboard.chtcdev.chtc.io/")
 
 # Email subjects
 DASHBOARD_REQUEST_SUBJECT = "New AP Dashboard Request from {netid}"
@@ -28,10 +30,9 @@ AP_REPAIR_COMPLETE_SUBJECT = "Personal Access Point Operational"
 
 DASHBOARD_REQUEST_CONTENT = """
 A new AP dashboard has been requested by user {netid} with the following parameters:
-Job Input Size (GB): {job_input_size}
-Job Output Size (GB): {job_output_size}
+    
+Job Data Size (GB): {job_data_size}
 Job Count: {job_count}
-Concurrent Jobs: {concurrent_jobs}
 DAGMan: {dagman}
 Local Universe: {local_universe}
 """
@@ -57,10 +58,12 @@ User {netid} has requested access to the Spark Slurm cluster for the purpose of 
 """
 # User-facing email texts
 
-CHTC_ACCOUNT_READY_CONTENT = """
-Hello {netid},
+CHTC_ACCOUNT_READY_CONTENT = f"""
+Hello {{netid}},
 
 Your CHTC account is now ready to use. Please return to the AP dashboard for instructions on requesting Slurm cluster access.
+
+{RETURN_LINK}
 
 Best regards,
 CHTC Support Team
@@ -75,10 +78,12 @@ Best regards,
 CHTC Infrastructure Services Team
 """
 
-SLURM_ACCOUNT_READY_CONTENT = """
-Hello {netid},
+SLURM_ACCOUNT_READY_CONTENT = f"""
+Hello {{netid}},
 
 Your Slurm account is now ready to use. Please return to the AP dashboard for instructions on requesting a Personal Access Point.
+
+{RETURN_LINK}
 
 Best regards,
 CHTC Infrastructure Services Team
@@ -102,10 +107,12 @@ Best regards,
 CHTC Infrastructure Services Team
 """
 
-AP_PROVISIONING_COMPLETE_CONTENT = """
-Hello {netid},
+AP_PROVISIONING_COMPLETE_CONTENT = f"""
+Hello {{netid}},
 
 The infrastructure services team has provisioned your Personal Access Point. Please return to the AP dashboard for instructions to access your Personal AP.
+
+{RETURN_LINK}
 
 Best regards,
 CHTC Infrastructure Services Team
@@ -120,10 +127,12 @@ Best regards,
 CHTC Infrastructure Services Team
 """
 
-AP_REPAIR_COMPLETE_CONTENT = """
-Hello {netid},
+AP_REPAIR_COMPLETE_CONTENT = f"""
+Hello {{netid}},
 
 The operational issue with your Personal Access Point is now resolved. Please return to the AP dashboard for instructions to access your Personal AP.
+
+{RETURN_LINK}
 
 Best regards,
 CHTC Infrastructure Services Team
@@ -161,10 +170,8 @@ def send_dashboard_request_notification(netid: str, dashboard_request: Dashboard
         DASHBOARD_REQUEST_SUBJECT.format(netid=netid),
         DASHBOARD_REQUEST_CONTENT.format(
             netid=netid,
-            job_input_size=dashboard_request.job_input_size,
-            job_output_size=dashboard_request.job_output_size,
+            job_input_size=dashboard_request.job_data_size,
             job_count=dashboard_request.job_count,
-            concurrent_jobs=dashboard_request.concurrent_jobs,
             dagman='Yes' if dashboard_request.dagman else 'No',
             local_universe='Yes' if dashboard_request.local_universe else 'No'
         ))

@@ -4,7 +4,7 @@ Used to check if a user exists in the userapp system and whether they have
 access to a submit node (for Spark/HPC access).
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from os import environ
 from typing import Optional, Any
 from dataclasses import dataclass
@@ -162,8 +162,6 @@ def get_userapp_user_status(
         spark_account = RequestStatus.REQUEST_RECEIVED
     else:
         spark_account = RequestStatus.NOT_REQUESTED
-
-    modify_timestamp = user.date.replace(tzinfo=timezone.utc) if user.date else None
 
     return UserAppUserStatus(
         chtc_account=chtc_account,
