@@ -29,16 +29,19 @@ def poll_userapp_user_status():
     users = db.get_not_fully_registered_users()
     for user in users:
         userapp_status = get_userapp_user_status(user.netid)
+        # We need to ensure that enough time has passed between the user being marked for spark login node acesss
+        # in the userapp, and puppet reconciling the user's account onto the login node. We don't get the user's last
+        # update time from the userapp directly, just the creation time, so we need to proxy the update time with the
+        # "last observed change" stored directly in the dashboard DB
+        can_mark_complete = user.updated_at and last_puppet_run_utc - user.updated_at > PUPPET_WAIT_TIME
+        userapp_status.spark_account = userapp_status.spark_account if can_mark_complete else RequestStatus.NOT_REQUESTED
         if (
             (userapp_status.chtc_account == RequestStatus.COMPLETE and user.chtc_account != RequestStatus.COMPLETE)
             or
             (userapp_status.spark_account == RequestStatus.COMPLETE and user.spark_account != RequestStatus.COMPLETE)
         ):
-            if userapp_status.modify_timestamp and last_puppet_run_utc - userapp_status.modify_timestamp < PUPPET_WAIT_TIME:
-                print(f"User {user.netid} has LDAP modification more recent than last puppet run. Skipping.")
-                continue
 
-            db.update_user_chtc_account_status_from_ldap(user.netid, userapp_status)
+            db.update_user_chtc_account_status_from_userapp(user.netid, userapp_status)
             if userapp_status.chtc_account == RequestStatus.COMPLETE and userapp_status.spark_account == RequestStatus.COMPLETE:
                 print(f"User {user.netid} has newly-detected LDAP access. Notifying.")
                 send_slurm_account_provisioned_notification(user.netid)

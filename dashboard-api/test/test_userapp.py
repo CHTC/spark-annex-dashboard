@@ -4,142 +4,20 @@ from src.db_models import RequestStatus
 from src.userapp_utils import UserAppUserStatus
 from src import db
 from fastapi.testclient import TestClient
-from typing import Any
-from dataclasses import dataclass
+from .mock_json_responses import (
+    MockJsonResponse,
+    TEST_NETID,
+    USER_ACTIVE_NO_SUBMIT_NODES,
+    USER_ACTIVE_OTHER_SUBMIT_NODE,
+    USER_ACTIVE_WITH_SPARK_NODE,
+    USER_WITH_MULTIPLE_SUBMIT_NODES,
+    USER_INACTIVE_NO_FORMS,
+    USER_INACTIVE_NON_HPC_FORM,
+    USER_INACTIVE_HPC_FORM,
+)
 import pytest
 
 client = TestClient(app)
-
-
-@dataclass
-class MockJsonResponse:
-    json_data: Any
-
-    def json(self):
-        return self.json_data
-
-    def raise_for_status(self):
-        pass
-
-TEST_NETID = "test-user"
-
-# A minimal valid active UserAppUser payload with no submit nodes
-USER_ACTIVE_NO_SUBMIT_NODES = {
-    "id": 1,
-    "name": "Test User",
-    "netid": "test-user",
-    "active": True,
-    "date": "2024-01-01T00:00:00",
-    "submit_nodes": [],
-}
-
-# A UserAppUser payload with a submit node that is NOT the spark node
-USER_ACTIVE_OTHER_SUBMIT_NODE = {
-    "id": 1,
-    "name": "Test User",
-    "netid": "test-user",
-    "active": True,
-    "date": "2024-01-01T00:00:00",
-    "submit_nodes": [
-        {
-            "id": 10,
-            "submit_node_id": 2,
-            "submit_node_name": "other-login.chtc.wisc.edu",
-            "user_id": 1,
-        }
-    ],
-}
-
-# A UserAppUser payload with the spark submit node
-USER_ACTIVE_WITH_SPARK_NODE = {
-    "id": 1,
-    "name": "Test User",
-    "netid": "test-user",
-    "active": True,
-    "date": "2024-01-01T00:00:00",
-    "submit_nodes": [
-        {
-            "id": 10,
-            "submit_node_id": 1,
-            "submit_node_name": "hpclogin1.chtc.wisc.edu",
-            "user_id": 1,
-        }
-    ],
-}
-
-# A UserAppUser payload where the user is inactive with no user_forms
-USER_INACTIVE_NO_FORMS = {
-    "id": 1,
-    "name": "Test User",
-    "netid": "test-user",
-    "active": False,
-    "date": "2024-01-01T00:00:00",
-    "submit_nodes": [],
-    "user_forms": [],
-}
-
-# A UserAppUser payload where the user is inactive with a user_form that does NOT request HPC
-USER_INACTIVE_NON_HPC_FORM = {
-    "id": 1,
-    "name": "Test User",
-    "netid": "test-user",
-    "active": False,
-    "date": "2024-01-01T00:00:00",
-    "submit_nodes": [],
-    "user_forms": [
-        {
-            "id": 1,
-            "form_type": "user_application",
-            "status": "pending",
-            "created_at": "2024-01-01T00:00:00",
-            "updated_at": "2024-01-01T00:00:00",
-            "content": {"computing_type": "HTC"},
-        }
-    ],
-}
-
-# A UserAppUser payload where the user is inactive with a user_form that requests HPC access
-USER_INACTIVE_HPC_FORM = {
-    "id": 1,
-    "name": "Test User",
-    "netid": "test-user",
-    "active": False,
-    "date": "2024-01-01T00:00:00",
-    "submit_nodes": [],
-    "user_forms": [
-        {
-            "id": 1,
-            "form_type": "user_application",
-            "status": "pending",
-            "created_at": "2024-01-01T00:00:00",
-            "updated_at": "2024-01-01T00:00:00",
-            "content": {"computing_type": "HPC"},
-        }
-    ],
-}
-
-# A UserAppUser payload with multiple submit nodes, including the spark node
-USER_WITH_MULTIPLE_SUBMIT_NODES = {
-    "id": 1,
-    "name": "Test User",
-    "netid": "test-user",
-    "active": True,
-    "date": "2024-01-01T00:00:00",
-    "submit_nodes": [
-        {
-            "id": 10,
-            "submit_node_id": 2,
-            "submit_node_name": "other-login.chtc.wisc.edu",
-            "user_id": 1,
-        },
-        {
-            "id": 11,
-            "submit_node_id": 1,
-            "submit_node_name": "hpclogin1.chtc.wisc.edu",
-            "user_id": 1,
-        },
-    ],
-}
 
 class UserWithStatusTest:
 

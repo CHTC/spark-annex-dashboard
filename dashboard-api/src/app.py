@@ -41,7 +41,7 @@ def get_user_info(request: Request) -> UserInfo:
     
     # If the user is not fully registered yet, check LDAP to see if their account is fully registered
     if user.chtc_account != RequestStatus.COMPLETE or user.spark_account != RequestStatus.COMPLETE:
-        print(f"User state is chtc: {user.chtc_account} spark: {user.spark_account}. Checking LDAP for updates")
+        print(f"User state is chtc: {user.chtc_account} spark: {user.spark_account}. Checking the UserApp for updates")
         # Check LDAP to see if either phase of account registration has progressed from the state in the local DB
         user_status = update_user_state_from_userapp(request.state.user_id, UserAppUserStatus(user.chtc_account, user.spark_account))
         

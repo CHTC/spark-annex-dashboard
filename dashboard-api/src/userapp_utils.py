@@ -27,7 +27,6 @@ class UserAppUserStatus:
 
     chtc_account: RequestStatus
     spark_account: RequestStatus
-    modify_timestamp: datetime | None = None
 
 
 class UserAppSubmitNode(BaseModel):
@@ -134,7 +133,6 @@ def get_userapp_user_status(
         return UserAppUserStatus(
             chtc_account=RequestStatus.NOT_REQUESTED,
             spark_account=RequestStatus.NOT_REQUESTED,
-            modify_timestamp=None,
         )
 
     # Use the first matching user (netid should be unique)
@@ -170,14 +168,12 @@ def get_userapp_user_status(
     return UserAppUserStatus(
         chtc_account=chtc_account,
         spark_account=spark_account,
-        modify_timestamp=modify_timestamp,
     )
 
 
 def update_user_state_from_userapp(user_name: str, current_status: UserAppUserStatus) -> UserAppUserStatus:
     userapp_status = get_userapp_user_status(user_name)
     return UserAppUserStatus(
-        chtc_account = userapp_status.chtc_account if userapp_status.chtc_account > current_status.chtc_account else current_status.chtc_account,
-        spark_account = userapp_status.spark_account if userapp_status.spark_account > current_status.spark_account else current_status.spark_account,
-        modify_timestamp = userapp_status.modify_timestamp if userapp_status.modify_timestamp else current_status.modify_timestamp,
+        chtc_account = max(userapp_status.chtc_account, current_status.chtc_account),
+        spark_account = max(userapp_status.spark_account, current_status.spark_account),
     )

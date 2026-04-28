@@ -4,6 +4,7 @@ from os import environ
 from . import db_models as dm
 from .api_models import DashboardRequestInfo
 from .userapp_utils import UserAppUserStatus
+from datetime import datetime
 
 from fastapi import HTTPException
 
@@ -41,6 +42,7 @@ def update_user(netid: str, user_status: UserAppUserStatus ):
             raise HTTPException(400, f"User {netid} not registered")
         user.chtc_account = user_status.chtc_account
         user.spark_account = user_status.spark_account 
+        user.updated_at = datetime.now()
         session.add(user)
         session.commit()
         return user
@@ -115,13 +117,14 @@ def get_not_fully_registered_users() -> list[dm.UserModel]:
         ).all()
         return list(users)
 
-def update_user_chtc_account_status_from_ldap(netid: str, account_status: UserAppUserStatus):
+def update_user_chtc_account_status_from_userapp(netid: str, account_status: UserAppUserStatus):
     with DbSession() as session:
         user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
         if user is None:
             raise HTTPException(400, f"User {netid} not registered")
         user.chtc_account = dm.RequestStatus.COMPLETE if account_status.chtc_account == dm.RequestStatus.COMPLETE else user.chtc_account
         user.spark_account = dm.RequestStatus.COMPLETE if account_status.spark_account == dm.RequestStatus.COMPLETE else user.spark_account
+        user.updated_at = datetime.now()
         session.add(user)
         session.commit()
 

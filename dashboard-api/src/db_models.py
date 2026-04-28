@@ -42,6 +42,7 @@ class UserModel(Base):
 
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     dashboard_requests: Mapped[List["UserDashboardRequestsModel"]] = relationship(back_populates="user")
 
