@@ -14,13 +14,19 @@ interface APFormProps {
 const textInputClass = "w-full px-4 py-2 border border-gray-300 rounded-md disabled:bg-gray-100 disabled:text-gray-500"
 const checkboxClass = "w-5 h-5 text-blue-600 rounded border-gray-300 cursor-pointer disabled:cursor-default"
 
+const jobDataSizeOptions = [
+  "Not sure",
+  "< 10",
+  "10 - 100",
+  "100 - 500",
+  "> 500",
+];
+
 
 export default function APForm({data, onSubmit, onCancel}: APFormProps) {
   const [formData, setFormData] = useState<DashboardRequest>({
-    job_input_size: 1,
-    job_output_size: 1,
-    job_count: 10000,
-    concurrent_jobs: 10000,
+    job_data_size: "Not sure",
+    job_count: 1000,
     dagman: false,
     local_universe: false,
   });
@@ -44,6 +50,14 @@ export default function APForm({data, onSubmit, onCancel}: APFormProps) {
     setFormData(prev => ({
       ...prev,
       [name]: Number(value),
+    }));
+  };
+
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
     }));
   };
 
@@ -87,47 +101,12 @@ export default function APForm({data, onSubmit, onCancel}: APFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        {/* Job Input Size */}
-        <div>
-          <label htmlFor="job_input_size" className="block text-md font-medium text-gray-700 mb-2">
-            Job Input Size (GB)
-          </label>
-          <input
-            type="text"
-            id="job_input_size"
-            name="job_input_size"
-            pattern="[0-9]*"
-            disabled={disabled}
-            value={formData.job_input_size}
-            onChange={handleInputChange}
-            className={textInputClass}
-            placeholder="1"
-          />
-        </div>
-
-        {/* Job Output Size */}
-        <div>
-          <label htmlFor="job_output_size" className="block text-md font-medium text-gray-700 mb-2">
-            Job Output Size (GB)
-          </label>
-          <input
-            type="text"
-            id="job_output_size"
-            name="job_output_size"
-            pattern="[0-9]*"
-            value={formData.job_output_size}
-            disabled={disabled}
-            onChange={handleInputChange}
-            className={textInputClass}
-            placeholder="1"
-          />
-        </div>
-
+      <div className="grid grid-cols-1 gap-6 mb-8">
+        
         {/* Total Job Count */}
         <div>
           <label htmlFor="job_count" className="block text-md font-medium text-gray-700 mb-2">
-            Total Job Count
+            How many jobs do you plan on running?
           </label>
           <input
             type="text"
@@ -138,30 +117,51 @@ export default function APForm({data, onSubmit, onCancel}: APFormProps) {
             value={formData.job_count}
             onChange={handleInputChange}
             className={textInputClass}
-            placeholder="10000"
+            placeholder="1000"
           />
+        </div>
+        
+        {/* Job Input Size */}
+        <div>
+          <span className="block text-md font-medium text-gray-700 mb-2">
+            How much disk space does each of your jobs need (in GB)? Include the size of both input and output data.
+          </span>
+          <div className="flex flex-row gap-2">
+            {jobDataSizeOptions.map((option) => (
+              <label
+                key={option}
+                className={`flex flex-1 items-center justify-start gap-2 px-2 py-2 rounded-md cursor-pointer transition-colors ${
+                  disabled ? "cursor-default bg-gray-100 text-gray-500" :
+                  formData.job_data_size === option ? "text-blue-700" : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="job_data_size"
+                  value={option}
+                  disabled={disabled}
+                  checked={formData.job_data_size === option}
+                  onChange={handleRadioChange}
+                  className="w-4 h-4 text-blue-600 border-gray-300 cursor-pointer disabled:cursor-default"
+                />
+                <span className="text-md font-medium">{option}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
-        {/* Concurrent Job Count */}
-        <div>
-          <label htmlFor="concurrent_jobs" className="block text-md font-medium text-gray-700 mb-2">
-            Concurrent Job Count
-          </label>
-          <input
-            type="text"
-            id="concurrent_jobs"
-            name="concurrent_jobs"
-            pattern="[0-9]*"
-            disabled={disabled}
-            value={formData.concurrent_jobs}
-            onChange={handleInputChange}
-            className={textInputClass}
-            placeholder="10000"
-          />
-        </div>
       </div>
 
       <div className="space-y-4 mb-8">
+        <label className="block text-md font-medium text-gray-700 mb-2">
+          Advanced Configuration
+        </label>
+        
+        <p className="text-md text-gray-600 mb-2">
+          If you are already familiar with HTCondor, these configuration options will influence your AP's
+          resource requirements. These can be left blank by default.
+        </p>
+        
         {/* Dagman Checkbox */}
         <label className="flex items-center cursor-pointer">
           <input
@@ -173,7 +173,7 @@ export default function APForm({data, onSubmit, onCancel}: APFormProps) {
             className={checkboxClass}
           />
           <span className="ml-3 text-md text-gray-700">
-            Do you plan on running multi-stage workflows with DagMAN?
+            Do you plan on running multi-stage workflows via DAGMan?
           </span>
         </label>
 
@@ -188,7 +188,7 @@ export default function APForm({data, onSubmit, onCancel}: APFormProps) {
             className={checkboxClass}
           />
           <span className="ml-3 text-md text-gray-700">
-            Do you plan on running local universe jobs directly on your AP?
+            Do you plan on running jobs directly on your AP via Local Universe?
           </span>
         </label>
       </div>

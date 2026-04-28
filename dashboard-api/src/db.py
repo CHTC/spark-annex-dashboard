@@ -78,11 +78,9 @@ def register_user_dashboard_request(netid: str, dashboard_request: DashboardRequ
             request_status = dm.RequestStatus.REQUEST_RECEIVED,
             dashboard_name = user.netid,
 
-            job_input_size_gb = dashboard_request.job_input_size,
-            job_output_size_gb = dashboard_request.job_output_size,
+            job_data_size_gb = dashboard_request.job_data_size,
 
             job_count = dashboard_request.job_count,
-            concurrent_jobs = dashboard_request.concurrent_jobs,
 
             dagman = dashboard_request.dagman,
             local_universe = dashboard_request.local_universe,

@@ -65,11 +65,9 @@ class UserDashboardRequestsModel(Base):
     # User-set parameters for dashboard creation
     dashboard_name: Mapped[str] = mapped_column(String, nullable=False)
 
-    job_input_size_gb: Mapped[int] = mapped_column(Integer, nullable=False)
-    job_output_size_gb: Mapped[int] = mapped_column(Integer, nullable=False)
+    job_data_size_gb: Mapped[str] = mapped_column(Integer, nullable=False)
 
     job_count: Mapped[int] = mapped_column(Integer, nullable=False)
-    concurrent_jobs: Mapped[int] = mapped_column(Integer, nullable=False)
 
     dagman: Mapped[bool] = mapped_column(Boolean, nullable=False)
     local_universe: Mapped[bool] = mapped_column(Boolean, nullable=False)

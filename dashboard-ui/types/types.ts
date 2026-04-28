@@ -9,10 +9,8 @@ export enum RequestStatus {
 
 
 export interface DashboardRequest {
-  job_input_size: number,
-  job_output_size: number,
+  job_data_size: string,
   job_count: number,
-  concurrent_jobs: number,
   dagman: boolean,
   local_universe: boolean,
 }
