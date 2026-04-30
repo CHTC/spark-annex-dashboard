@@ -37,8 +37,10 @@ def poll_userapp_user_status():
         # in the userapp, and puppet reconciling the user's account onto the login node. We don't get the user's last
         # update time from the userapp directly, just the creation time, so we need to proxy the update time with the
         # "last observed change" stored directly in the dashboard DB
-        user_update_utc = user.updated_at.astimezone(pytz.UTC)
-        can_mark_complete = user.updated_at and last_puppet_run_utc - user_update_utc > PUPPET_WAIT_TIME
+        can_mark_complete = (
+            user.updated_at and 
+            last_puppet_run_utc - user.updated_at.astimezone(pytz.UTC) > PUPPET_WAIT_TIME
+        )
         userapp_status.spark_account = userapp_status.spark_account if can_mark_complete else RequestStatus.NOT_REQUESTED
         if (
             (userapp_status.chtc_account == RequestStatus.COMPLETE and user.chtc_account != RequestStatus.COMPLETE)
