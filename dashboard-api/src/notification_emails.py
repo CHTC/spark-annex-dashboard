@@ -1,7 +1,6 @@
 import os
 import smtplib
 from email.message import EmailMessage
-from uuid import RESERVED_FUTURE
 
 from .api_models import DashboardRequestInfo, LiveDashboardStatus
 
@@ -170,7 +169,7 @@ def send_dashboard_request_notification(netid: str, dashboard_request: Dashboard
         DASHBOARD_REQUEST_SUBJECT.format(netid=netid),
         DASHBOARD_REQUEST_CONTENT.format(
             netid=netid,
-            job_input_size=dashboard_request.job_data_size,
+            job_data_size=dashboard_request.job_data_size,
             job_count=dashboard_request.job_count,
             dagman='Yes' if dashboard_request.dagman else 'No',
             local_universe='Yes' if dashboard_request.local_universe else 'No'

@@ -90,8 +90,8 @@ def register_user_dashboard_request(netid: str, dashboard_request: DashboardRequ
         session.commit()
 
 
-def cancel_user_dashboard_request(netid: str):
-    """ Given a user ID, return the status of that user's dashboard request."""
+def _mark_user_dashboard_request_as(netid: str, status: dm.RequestStatus):
+    """ Util function to set the status of a user's outstanding dashboard request """
     with DbSession() as session:
         user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
         if user is None:
@@ -103,10 +103,18 @@ def cancel_user_dashboard_request(netid: str):
         if not active_request:
             raise HTTPException(400, "User has no active dashboard request")
 
-        active_request.request_status = dm.RequestStatus.DELETED
+        active_request.request_status = status
         session.add(active_request)
         session.commit()
 
+def cancel_user_dashboard_request(netid: str):
+    """ Given a user ID, cancel that user's outstanding dashboard request."""
+    _mark_user_dashboard_request_as(netid, dm.RequestStatus.DELETED)
+
+def mark_user_dashboard_request_complete(netid: str):
+    """ Given a user ID, mark that user's oustanding dashboard request as complete. """
+    _mark_user_dashboard_request_as(netid, dm.RequestStatus.COMPLETE)
+    
 def get_not_fully_registered_users() -> list[dm.UserModel]:
     """Get list of users whose LDAP status in the database does not match their actual LDAP status."""
     with DbSession() as session:
@@ -137,11 +145,17 @@ def request_slurm_account(netid: str):
         session.commit()
 
 
-def mark_user_assistance_requested(netid: str):
+def _mark_user_assistance_as(netid: str, status: bool):
     with DbSession() as session:
         user = session.scalar(select(dm.UserModel).where(dm.UserModel.netid == netid))
         if user is None:
             raise HTTPException(400, f"User {netid} not registered")
-        user.assistance_requested = True
+        user.assistance_requested = status
         session.add(user)
         session.commit()
+    
+def mark_user_assistance_requested(netid: str):
+    _mark_user_assistance_as(netid, True)
+
+def mark_user_assistance_completed(netid: str):
+    _mark_user_assistance_as(netid, False)

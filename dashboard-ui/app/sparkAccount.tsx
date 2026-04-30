@@ -50,15 +50,20 @@ export default function SparkAccount({data, error, isLoading, onSubmit}: SparkAc
 
         if (chtc_account.chtc_account == NOT_REQUESTED) {
           return (
-            <span>
-              A CHTC user account does not currently exist for your netID ({data.user_id}). A CHTC account is required for 
-              accessing resources via the Spark cluster. Please
-              {" "}
-              <a className="text-blue-600 hover:text-blue-700" href="https://userapp.chtcdev.chtc.io/forms/user-applications/create/">request an account</a> 
-              {" "}
-              from CHTC to get started. Please select "High Performance Computing (HPC)" when asked which system best fits your computing needs,
-              as the Personal AP's worker nodes run within CHTC's HPC cluster.
-            </span>
+            <p>
+              <span>
+                A CHTC user account does not currently exist for your netID ({data.user_id}). Please
+                {" "}
+                <a className="text-blue-600 hover:text-blue-700" href="https://userapp.chtcdev.chtc.io/forms/user-applications/create/">request an account</a> 
+                {" "}
+                from CHTC to get started. 
+              </span>
+              <br/>
+              <span>
+                Please select "High Performance Computing (HPC)" when asked which system best fits your computing needs,
+                as the Personal AP's worker nodes run within CHTC's HPC cluster. 
+              </span>
+            </p>
           )
         }
         else if (chtc_account.chtc_account == REQUEST_RECEIVED) {

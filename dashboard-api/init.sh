@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Start the main application
-fastapi run app/app.py --port 80
+fastapi run src/app.py --port 80

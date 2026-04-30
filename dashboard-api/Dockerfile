@@ -10,6 +10,7 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY init.sh /usr/local/bin/init.sh
-COPY ./src /code/app
+COPY ./src /code/src
+COPY ./scripts /code/scripts
 
 CMD ["/usr/local/bin/init.sh"]
