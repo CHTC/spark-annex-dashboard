@@ -60,7 +60,21 @@ User {netid} has requested access to the Spark Slurm cluster for the purpose of 
 CHTC_ACCOUNT_READY_CONTENT = f"""
 Hello {{netid}},
 
-Your CHTC account is now ready to use. Please return to the AP dashboard for instructions on requesting Slurm cluster access.
+Your CHTC account is now ready to use. Please return to the AP dashboard for instructions on \
+requesting Slurm cluster access.
+
+{RETURN_LINK}
+
+Best regards,
+CHTC Support Team
+"""
+
+CHTC_ACCOUNT_READY_AND_SLURM_REQUESTED_CONTENT = f"""
+Hello {{netid}},
+
+Your CHTC account is now ready to use. We have received your request for Slurm cluster access via your \
+CHTC account application and will process it within 2-3 business days. If you haven't heard from us \
+within 3 business days, please send a follow-up email to chtc-infrastructure@g-groups.wisc.edu.
 
 {RETURN_LINK}
 
@@ -71,7 +85,9 @@ CHTC Support Team
 SLURM_REQUEST_CONFIRMATION_CONTENT = """
 Hello {netid},
 
-Thank you for requesting access to CHTC's Spark Slurm cluster. We've received your request and will process it within 2-3 business days. If you haven't heard from us within 3 business days, please send a follow-up email to chtc-infrastructure@g-groups.wisc.edu.
+Thank you for requesting access to CHTC's Spark Slurm cluster. We've received your request \
+and will process it within 2-3 business days. If you haven't heard from us within 3 business \
+days, please send a follow-up email to chtc-infrastructure@g-groups.wisc.edu.
 
 Best regards,
 CHTC Infrastructure Services Team
@@ -80,7 +96,8 @@ CHTC Infrastructure Services Team
 SLURM_ACCOUNT_READY_CONTENT = f"""
 Hello {{netid}},
 
-Your Slurm account is now ready to use. Please return to the AP dashboard for instructions on requesting a Personal Access Point.
+Your Slurm account is now ready to use. Please return to the AP dashboard for instructions on \
+requesting a Personal Access Point.
 
 {RETURN_LINK}
 
@@ -91,7 +108,9 @@ CHTC Infrastructure Services Team
 AP_REQUEST_CONFIRMATION_CONTENT = """
 Hello {netid},
 
-Thank you for requesting a Personal Access Point. We've received your request and will process it within 2-3 business days. If you haven't heard from us within 3 business days, please send a follow-up email to chtc-infrastructure@g-groups.wisc.edu.
+Thank you for requesting a Personal Access Point. We've received your request and will process it \
+within 2-3 business days. If you haven't heard from us within 3 business days, please send a follow-up \
+email to chtc-infrastructure@g-groups.wisc.edu.
 
 Best regards,
 CHTC Infrastructure Services Team
@@ -100,7 +119,8 @@ CHTC Infrastructure Services Team
 AP_PROVISIONING_STARTED_CONTENT = """
 Hello {netid},
 
-The infrastructure services team has started work provisioning your Personal Access Point. Your AP should be ready to go within 2-4 hours. You'll receive another notification when your AP is live.
+The infrastructure services team has started work provisioning your Personal Access Point. Your AP \
+should be ready to go within 2-4 hours. You'll receive another notification when your AP is live.
 
 Best regards,
 CHTC Infrastructure Services Team
@@ -109,7 +129,8 @@ CHTC Infrastructure Services Team
 AP_PROVISIONING_COMPLETE_CONTENT = f"""
 Hello {{netid}},
 
-The infrastructure services team has provisioned your Personal Access Point. Please return to the AP dashboard for instructions to access your Personal AP.
+The infrastructure services team has provisioned your Personal Access Point. Please return to the AP \
+dashboard for instructions to access your Personal AP.
 
 {RETURN_LINK}
 
@@ -120,7 +141,9 @@ CHTC Infrastructure Services Team
 AP_HEALTH_DEGRADED_CONTENT = """
 Hello {netid},
 
-We have detected an operational issue with your Personal Access Point. Please visit the AP Dashboard for a detailed health report on your AP. If this issue has not resolved itself within an hour, please reach out to chtc-infrastructure@g-groups.wisc.edu.
+We have detected an operational issue with your Personal Access Point. Please visit the AP Dashboard \
+for a detailed health report on your AP. If this issue has not resolved itself within an hour, please \
+reach out to chtc-infrastructure@g-groups.wisc.edu.
 
 Best regards,
 CHTC Infrastructure Services Team
@@ -129,7 +152,8 @@ CHTC Infrastructure Services Team
 AP_REPAIR_COMPLETE_CONTENT = f"""
 Hello {{netid}},
 
-The operational issue with your Personal Access Point is now resolved. Please return to the AP dashboard for instructions to access your Personal AP.
+The operational issue with your Personal Access Point is now resolved. Please return to the AP dashboard \
+for instructions to access your Personal AP.
 
 {RETURN_LINK}
 
@@ -213,6 +237,14 @@ def send_slurm_account_requested_notification(netid: str):
 
 def send_chtc_account_provisioned_notification(netid: str):
     """Send email notification that CHTC account has been provisioned."""
+    send_email(
+        CHTC_ACCOUNT_READY_SUBJECT.format(netid=netid), 
+        CHTC_ACCOUNT_READY_CONTENT.format(netid=netid), 
+        f"{netid}@wisc.edu")
+    
+def send_chtc_account_provisioned_and_slurm_requested_notification(netid: str):
+    """Send email notification that CHTC account has been provisioned, and that we've received their
+    request for spark access, but spark access has not yet been granted."""
     send_email(
         CHTC_ACCOUNT_READY_SUBJECT.format(netid=netid), 
         CHTC_ACCOUNT_READY_CONTENT.format(netid=netid), 

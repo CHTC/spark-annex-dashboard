@@ -10,7 +10,11 @@ import pytz
 
 from . import db
 from .userapp_utils import get_userapp_user_status
-from .notification_emails import send_chtc_account_provisioned_notification, send_slurm_account_provisioned_notification
+from .notification_emails import (
+    send_chtc_account_provisioned_notification, 
+    send_chtc_account_provisioned_and_slurm_requested_notification, 
+    send_slurm_account_provisioned_notification
+)
 from .icinga_utils import check_icinga_puppet_update_time
 from .db_models import RequestStatus
 
@@ -46,6 +50,9 @@ def poll_userapp_user_status():
             if userapp_status.chtc_account == RequestStatus.COMPLETE and userapp_status.spark_account == RequestStatus.COMPLETE:
                 print(f"User {user.netid} has newly-detected LDAP access. Notifying.")
                 send_slurm_account_provisioned_notification(user.netid)
+            elif userapp_status.chtc_account == RequestStatus.COMPLETE and user.spark_account == RequestStatus.REQUEST_RECEIVED:
+                print(f"User {user.netid} has newly detected CHTC access, and has already requested LDAP access. Notifying")
+                send_chtc_account_provisioned_and_slurm_requested_notification(user.netid)
             elif userapp_status.chtc_account == RequestStatus.COMPLETE:
                 print(f"User {user.netid} has newly detected CHTC access, but not LDAP access. Notifying")
                 send_chtc_account_provisioned_notification(user.netid)
