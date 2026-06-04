@@ -1,4 +1,5 @@
 fastapi[standard]
+starlette>=1.2.1
 pydantic
 uvicorn
 ldap3
